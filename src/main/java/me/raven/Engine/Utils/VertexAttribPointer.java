@@ -1,4 +1,4 @@
-package me.raven.Utils;
+package me.raven.Engine.Utils;
 
 import static org.lwjgl.opengl.GL20.*;
 
@@ -6,10 +6,10 @@ public class VertexAttribPointer {
 
     private int loc;
 
-    public VertexAttribPointer(int posSize, int colorSize, int texSize, int loc, int offset) {
+    public VertexAttribPointer(int vertexSize, int size, int loc, int offset) {
         this.loc = loc;
-        int byteSize = (posSize + colorSize + texSize) * Float.BYTES;
-        glVertexAttribPointer(loc, posSize, GL_FLOAT, false, byteSize, (long) offset * Float.BYTES);
+        int byteSize = vertexSize * Float.BYTES;
+        glVertexAttribPointer(loc, size, GL_FLOAT, false, byteSize, (long) offset * Float.BYTES);
         glEnableVertexAttribArray(loc);
     }
 

@@ -1,4 +1,4 @@
-package me.raven.Utils;
+package me.raven.Engine.Utils;
 
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
@@ -48,6 +48,13 @@ public class Shader {
         glUniform1i(glGetUniformLocation(program, name), value);
     }
 
+    public void setIntArray(String name, int value0, int value1) {
+        int[] output = new int[2];
+        output[0] = value0;
+        output[1] = value1;
+        glUniform1iv(glGetUniformLocation(program, name), output);
+    }
+
     private String fileToString(String path) {
         String output;
         try {
@@ -56,7 +63,6 @@ public class Shader {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
         return output;
     }
 

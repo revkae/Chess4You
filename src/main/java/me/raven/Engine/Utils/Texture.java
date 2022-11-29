@@ -1,4 +1,4 @@
-package me.raven.Utils;
+package me.raven.Engine.Utils;
 
 import org.lwjgl.BufferUtils;
 
@@ -8,6 +8,7 @@ import java.nio.IntBuffer;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
+import static org.lwjgl.opengl.GL14.GL_MIRRORED_REPEAT;
 import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 import static org.lwjgl.stb.STBImage.*;
 
@@ -16,19 +17,16 @@ public class Texture {
     private int slot;
     private int id;
 
-    public Texture(String filepath, String uniName, int slot, Shader shader) {
+    public Texture(String filepath, int slot) {
         this.filepath = filepath;
         this.slot = slot;
 
         id = glGenTextures();
+        glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, id);
 
-        shader.use();
-        shader.setInt(uniName, slot);
-        shader.unuse();
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -46,11 +44,11 @@ public class Texture {
             else
                 assert false : "Texture unknown number of channels " + channels.get();
             glGenerateMipmap(GL_TEXTURE_2D);
+
+            stbi_image_free(image);
         } else {
             assert false : "texture not loaded";
         }
-
-        stbi_image_free(image);
     }
 
     public void bind() {

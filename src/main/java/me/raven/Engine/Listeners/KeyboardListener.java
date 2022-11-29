@@ -1,10 +1,10 @@
-package me.raven.Listeners;
+package me.raven.Engine.Listeners;
 
 import static org.lwjgl.glfw.GLFW.*;
 
 public class KeyboardListener {
 
-    static boolean[] keys = new boolean[255];
+    static boolean[] keys = new boolean[500];
 
     public static void key_callback(long window, int key, int scancode, int action, int mods)
     {

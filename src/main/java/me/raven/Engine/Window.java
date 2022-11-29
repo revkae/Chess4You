@@ -1,7 +1,7 @@
-package me.raven;
+package me.raven.Engine;
 
-import me.raven.Listeners.KeyboardListener;
-import me.raven.Listeners.MouseListener;
+import me.raven.Engine.Listeners.KeyboardListener;
+import me.raven.Engine.Listeners.MouseListener;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.system.MemoryStack;
@@ -39,8 +39,8 @@ public class Window {
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
         window = glfwCreateWindow(this.width, this.height, this.title, NULL, NULL);
@@ -81,7 +81,7 @@ public class Window {
 
     public static Window get() {
         if (Window.instance == null) {
-            Window.instance = new Window(1280, 720, "Minecraft clone");
+            Window.instance = new Window(1280, 720, "Chess For You");
         }
         return Window.instance;
     }
