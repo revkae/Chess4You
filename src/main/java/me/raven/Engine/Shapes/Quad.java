@@ -1,49 +1,37 @@
 package me.raven.Engine.Shapes;
 
+import me.raven.Engine.Drawable;
 import me.raven.Engine.Utils.*;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
-import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL30.glGenVertexArrays;
+public class Quad implements Drawable {
 
-public class Quad {
-
-    public Shader shader;
-    public int vboID, eboID, vaoID;
+    Transform transform;
+    Vector4f color;
+    float[] data;
 
     public Quad() {
-        shader = new Shader("vertex.vert", "fragment.frag");
-        shader.use();
+        transform = new Transform();
+        color = new Vector4f(1.f);
+        data = Vertex.createQuad(transform.position, color, transform.scale, 0.f);
+    }
 
-        vaoID = glGenVertexArrays();
-        glBindVertexArray(vaoID);
+    public Quad(Vector3f position) {
+        transform = new Transform(position);
+        color = new Vector4f(1.f);
+        data = Vertex.createQuad(transform.position, color, transform.scale, 0.f);
+    }
 
-        vboID = glGenBuffers();
-        glBindBuffer(GL_VERTEX_ARRAY, vboID);
-        glBufferData(GL_VERTEX_ARRAY, Vertex.quadByteSize() * 1000L, GL_DYNAMIC_DRAW);
+    public Quad(Vector3f position, Vector2f scale) {
+        transform = new Transform(position, scale);
+        color = new Vector4f(1.f);
+        data = Vertex.createQuad(transform.position, color, transform.scale, 0.f);
+    }
 
-        int indices[] = {
-                0, 1, 2, 2, 3, 0,
-                4, 5, 6, 6, 7, 4
-        };
-
-        eboID = glGenBuffers();
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eboID);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
-
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, Vertex.byteSize(), Vertex.positionOffsetByte());
-        glEnableVertexAttribArray(0);
-
-        glVertexAttribPointer(1, 4, GL_FLOAT, false, Vertex.byteSize(), Vertex.colorOffsetByte());
-        glEnableVertexAttribArray(1);
-
-        glVertexAttribPointer(2, 2, GL_FLOAT, false, Vertex.byteSize(), Vertex.texCoordOffsetByte());
-        glEnableVertexAttribArray(2);
-
-        glVertexAttribPointer(3, 1, GL_FLOAT, false, Vertex.byteSize(), Vertex.texIDOffsetByte());
-        glEnableVertexAttribArray(3);
+    @Override
+    public float[] getData() {
+        return data;
     }
 }

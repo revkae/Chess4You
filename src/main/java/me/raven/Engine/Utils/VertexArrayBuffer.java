@@ -5,7 +5,7 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 public class VertexArrayBuffer {
 
-    private int id;
+    public int id;
 
     public VertexArrayBuffer() {
         id = glGenVertexArrays();

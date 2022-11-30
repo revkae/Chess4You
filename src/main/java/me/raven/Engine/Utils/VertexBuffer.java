@@ -3,7 +3,7 @@ package me.raven.Engine.Utils;
 import static org.lwjgl.opengl.GL15.*;
 
 public class VertexBuffer {
-    private int id;
+    public int id;
 
     public VertexBuffer(float[] data, int type) {
         id = glGenBuffers();

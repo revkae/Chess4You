@@ -1,14 +1,10 @@
 package me.raven.Engine.Utils;
 
-import org.lwjgl.BufferUtils;
-
-import java.nio.IntBuffer;
-
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 
 public class IndexBuffer {
-    private int id;
+    public int id;
 
     public IndexBuffer(int[] data) {
         id = glGenBuffers();

@@ -31,6 +31,9 @@ public class Shader {
         glAttachShader(program, fragment);
         glLinkProgram(program);
 
+        glDeleteShader(vertex);
+        glDeleteShader(fragment);
+
         checkProgram(program);
     }
 

@@ -7,6 +7,7 @@ import org.joml.Vector3f;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 
 public class BatchRenderer {
 
@@ -17,13 +18,13 @@ public class BatchRenderer {
     private final int MAX_QUAD_BYTE_SIZE = MAX_QUAD_FLOAT_SIZE * Float.BYTES;
 
     private float[] bufferData = new float[MAX_QUAD_FLOAT_SIZE];
+    private float[] tempBufferData = new float[MAX_QUAD_FLOAT_SIZE];
     private int currentDataLength = 0;
     private int currentIndexLength = 0;
     public Shader shader;
     public VertexArrayBuffer vertexArrayBuffer;
     public VertexBuffer vertexBuffer;
     public IndexBuffer indexBuffer;
-
     Texture texture;
     Texture texture1;
 
@@ -58,13 +59,26 @@ public class BatchRenderer {
         vertexArrayBuffer.bind();
         shader.use();
         glDrawElements(GL_TRIANGLES, currentIndexLength, GL_UNSIGNED_INT, 0);
+        shader.unuse();
+        vertexArrayBuffer.unbind();
+
+        texture.unbind();
+        texture1.unbind();
+    }
+
+    public void end() {
+        glDeleteBuffers(vertexBuffer.id);
+        glDeleteBuffers(indexBuffer.id);
+        glDeleteVertexArrays(vertexArrayBuffer.id);
+
+        glDeleteTextures(texture.id);
+        glDeleteTextures(texture1.id);
     }
 
     public void putData(float[] data) {
-
         int num = currentDataLength;
         for (float datum : data) {
-            bufferData[num] = datum;
+            tempBufferData[num] = datum;
             num++;
         }
 
@@ -78,7 +92,10 @@ public class BatchRenderer {
 
     public void updateData() {
         vertexBuffer.bind();
-        glBufferSubData(GL_ARRAY_BUFFER, 0L, bufferData);
+        glBufferSubData(GL_ARRAY_BUFFER, 0L, tempBufferData);
+        vertexBuffer.unbind();
+        currentDataLength = 0;
+        tempBufferData = new float[MAX_QUAD_FLOAT_SIZE];
     }
 
     private int[] generateIndices() {

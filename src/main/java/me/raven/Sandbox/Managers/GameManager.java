@@ -4,9 +4,12 @@ import me.raven.Engine.Camera;
 import me.raven.Engine.Listeners.KeyboardListener;
 import me.raven.Engine.Renderer.BatchRenderer;
 import me.raven.Engine.Renderer.Renderer;
+import me.raven.Engine.Shapes.Quad;
 import me.raven.Engine.Utils.*;
 import me.raven.Engine.Window;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
@@ -41,15 +44,12 @@ public class GameManager {
 
         renderer.createBatchRenderer();
 
+        Quad quad = new Quad(new Vector3f(300.f, 400.f, 0.0f), new Vector2f(50.f, 50.f));
+
         while (!glfwWindowShouldClose(window.getWindow())) {
             glClear(GL_COLOR_BUFFER_BIT);
 
-            for (int i = 0; i < 10; i++) {
-                for (int j = 0; j < 10; j++) {
-                    renderer.putData(Vertex.createQuad(new Vector3f(i * 50.f, j * 50.f, 0.0f), 50.f, (i + j) % 2));
-                }
-            }
-            System.out.println(renderer.getBatchRenderers().size());
+            renderer.draw(quad);
             renderer.onRender();
 
             glfwSwapBuffers(window.getWindow());
@@ -57,7 +57,7 @@ public class GameManager {
 
             DeltaTime.calculate();
         }
-
+        renderer.shutdown();
         end();
     }
 

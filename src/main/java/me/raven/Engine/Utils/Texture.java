@@ -14,8 +14,8 @@ import static org.lwjgl.stb.STBImage.*;
 
 public class Texture {
     private String filepath;
-    private int slot;
-    private int id;
+    public int slot;
+    public int id;
 
     public Texture(String filepath, int slot) {
         this.filepath = filepath;
