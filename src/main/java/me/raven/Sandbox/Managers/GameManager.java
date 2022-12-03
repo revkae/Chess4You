@@ -5,6 +5,8 @@ import me.raven.Engine.Renderer.Renderer;
 import me.raven.Engine.Utils.*;
 import me.raven.Engine.Window;
 import me.raven.Sandbox.Game.BoardManager;
+import me.raven.Sandbox.Game.Piece;
+import me.raven.Sandbox.Game.PieceManager;
 import org.lwjgl.opengl.GL;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
@@ -20,8 +22,8 @@ public class GameManager {
     private Camera camera;
     private SceneManager sceneManager;
     private Renderer renderer;
-
     private BoardManager boardManager;
+    private PieceManager pieceManager;
 
     public GameManager() {
         instance = this;
@@ -39,12 +41,18 @@ public class GameManager {
         sceneManager.createFirstScene();
         renderer.createTextureBatchRenderer();
         boardManager = new BoardManager();
+        pieceManager = new PieceManager();
 
         while (!glfwWindowShouldClose(window.getWindow())) {
             glClear(GL_COLOR_BUFFER_BIT);
 
+            pieceManager.onUpdate();
+
+
             boardManager.onUpdate();
             boardManager.onRender(renderer);
+            pieceManager.onRender(renderer);
+
 
             renderer.onRender();
 
@@ -84,5 +92,13 @@ public class GameManager {
 
     public Renderer getRenderer() {
         return renderer;
+    }
+
+    public BoardManager getBoardManager() {
+        return boardManager;
+    }
+
+    public PieceManager getPieceManager() {
+        return pieceManager;
     }
 }

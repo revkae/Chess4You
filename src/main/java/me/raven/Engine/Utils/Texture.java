@@ -31,7 +31,7 @@ public class Texture {
         IntBuffer width = BufferUtils.createIntBuffer(1);
         IntBuffer height = BufferUtils.createIntBuffer(1);
         IntBuffer channels = BufferUtils.createIntBuffer(1);
-        ByteBuffer image = stbi_load("resources/" + filepath, width, height, channels, 0);
+        ByteBuffer image = stbi_load(filepath, width, height, channels, 0);
 
         if (image != null) {
             stbi_set_flip_vertically_on_load(true);
@@ -47,7 +47,6 @@ public class Texture {
         } else {
             assert false : "texture not loaded";
         }
-        glBindBuffer(GL_TEXTURE_2D, 0);
     }
 
     public void bind() {

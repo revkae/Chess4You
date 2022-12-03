@@ -40,10 +40,10 @@ public class Quad implements Drawable {
         collision = new Collision(transform);
     }
 
-    public Quad(Vector3f position, Vector2f scale, int slot, Texture texture) {
+    public Quad(Vector3f position, Vector2f scale, Texture texture) {
         transform = new Transform(position, scale);
         color = new Vector4f(1.f, 1.f, 1.f, 1.f);
-        this.texID = slot;
+        this.texID = 0.f;
         data = Vertex.createQuad(transform.position, color, transform.scale, texID);
         collision = new Collision(transform);
         this.texture = texture;

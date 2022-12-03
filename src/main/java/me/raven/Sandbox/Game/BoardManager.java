@@ -10,6 +10,8 @@ import org.joml.Vector4f;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -20,21 +22,24 @@ public class BoardManager {
     private final Vector4f NORMAL_WHITE_COLOR = new Vector4f(1.f);
     private List<Integer> whiteTiles = new ArrayList<>(32);
     private List<Integer> blackTiles = new ArrayList<>(32);
-
     private List<Quad> board = new ArrayList<>(64);
-    private List<Integer> selectedTiles = new ArrayList<>(64);
+    private Queue<Integer> selectedTiles = new ConcurrentLinkedQueue<>();
 
     public BoardManager() {
+        Texture whiteTexture = new Texture("resources/awesomeface.jpg");
+        Texture blackTexture = new Texture("resources/wall.jpg");
+        int num = 0;
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if ((i + j) % 2 == 0) {
-                    whiteTiles.add(board.size() - 1);
-                    board.add(new Quad(new Vector3f(0.f + i * 50.f, 0.f + j * 50.f, 0.0f), new Vector2f(45.f, 45.f), 0, new Texture("wall.jpg")));
+                    whiteTiles.add(num);
+                    board.add(new Quad(new Vector3f(0.f + i * 50.f, 0.f + j * 50.f, 0.0f), new Vector2f(45.f, 45.f), whiteTexture));
                 }
                 else {
-                    blackTiles.add(board.size() - 1);
-                    board.add(new Quad(new Vector3f(0.f + i * 50.f, 0.f + j * 50.f, 0.0f), new Vector2f(45.f, 45.f), 1, new Texture("awesomeface.jpg")));
+                    blackTiles.add(num);
+                    board.add(new Quad(new Vector3f(0.f + i * 50.f, 0.f + j * 50.f, 0.0f), new Vector2f(45.f, 45.f), blackTexture));
                 }
+                num++;
             }
         }
     }
@@ -47,32 +52,42 @@ public class BoardManager {
                     if (quad.getColor().equals(SELECTED_TILE_COLOR)) {
                         unselectTile(i);
                     } else {
+                        System.out.println("num: " + i);
                         selectTile(i);
                     }
                 }
             }
+        } else if (MouseListener.isPressed(GLFW_MOUSE_BUTTON_LEFT)) {
+            unselectAllTiles();
         }
     }
 
     private void selectTile(int num) {
-        System.out.println("hey");
-        board.get(num).setColor(new Vector4f(0.f));
+        board.get(num).setColor(SELECTED_TILE_COLOR);
         selectedTiles.add(num);
     }
 
     private void unselectTile(int num) {
-        if (whiteTiles.contains(num)) {
-            board.get(num).setColor(NORMAL_WHITE_COLOR);
-            selectedTiles.remove(Integer.valueOf(num));
-        } else if (blackTiles.contains(num)) {
-            board.get(num).setColor(NORMAL_BLACK_COLOR);
-            selectedTiles.remove(Integer.valueOf(num));
+        if (!selectedTiles.contains(num)) return;
+
+        board.get(num).setColor(NORMAL_WHITE_COLOR);
+        selectedTiles.remove(Integer.valueOf(num));
+    }
+
+    private void unselectAllTiles() {
+        for (Integer tile : selectedTiles) {
+            board.get(tile).setColor(NORMAL_WHITE_COLOR);
+            selectedTiles.remove(tile);
         }
     }
 
     public void onRender(Renderer renderer) {
-        for (int i = 0; i < board.size(); i++) {
-            renderer.texturedDraw(board.get(i));
+        for (Quad quad : board) {
+            renderer.texturedDraw(quad);
         }
+    }
+
+    public List<Quad> getBoard() {
+        return board;
     }
 }

@@ -61,12 +61,14 @@ public class TexturedBatchRenderer {
             sampler[i] = i;
         }
         shader.setIntArray("textures", sampler);
-        textureIds.set(0, 1);
+//        textureIds.set(0, 1);
+//        textureIds.set(1, 2);
     }
 
     public void draw() {
-        glBindTextureUnit(0, textureIds.get(0));
-
+        for (int i = 0; i < currentTextureIndex; i++) {
+            glBindTextureUnit(i, textureIds.get(i));
+        }
 
         vertexArrayBuffer.bind();
         shader.use();
@@ -74,9 +76,9 @@ public class TexturedBatchRenderer {
         shader.unuse();
         vertexArrayBuffer.unbind();
 
-//        for (int i = 0; i < currentTextureIndex; i++) {
-//            glBindTextureUnit(0, 0);
-//        }
+        for (int i = 0; i < currentTextureIndex; i++) {
+            glBindTextureUnit(0, 0);
+        }
     }
 
     public void end() {
@@ -90,24 +92,22 @@ public class TexturedBatchRenderer {
     }
 
     public void putData(Quad quad) {
+        int textureIndex = 0;
+        boolean isEqual = false;
+        for (int i = 0; i < currentTextureIndex; i++) {
+            if (textureIds.get(i) == quad.getTexture().id) {
+                isEqual = true;
+                textureIndex = i;
+                quad.setTexID(i);
+            }
+        }
 
-//        int textureIndex = 0;
-//        boolean isEqual = false;
-//        for (int i = 0; i < currentTextureIndex; i++) {
-//            if (textureIds.get(i) == quad.getTexture().id) {
-//                System.out.println("equal: " + i + " : " + quad.getTexture().id);
-//                isEqual = true;
-//                textureIndex = i;
-//                quad.setTexID(i);
-//            }
-//        }
-//
-//        if (textureIndex == 0 && !isEqual) {
-//            textureIndex = currentTextureIndex;
-//            textureIds.set(textureIndex, quad.getTexture().id);
-//            quad.setTexID(textureIndex);
-//            currentTextureIndex++;
-//        }
+        if (textureIndex == 0 && !isEqual) {
+            textureIndex = currentTextureIndex;
+            textureIds.set(textureIndex, quad.getTexture().id);
+            quad.setTexID(textureIndex);
+            currentTextureIndex++;
+        }
 
         int num = currentDataLength;
         for (float datum : quad.getData()) {
