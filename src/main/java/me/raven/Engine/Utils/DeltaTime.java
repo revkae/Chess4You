@@ -1,13 +1,15 @@
 package me.raven.Engine.Utils;
 
+import static org.lwjgl.glfw.GLFW.glfwGetTime;
+
 public class DeltaTime {
 
     static float deltaTime;
-    static float beginTime = Time.getTime();
-    static float endTime = Time.getTime();
+    static float beginTime = (float) glfwGetTime();
+    static float endTime = (float) glfwGetTime();
 
     public static void calculate() {
-        endTime = Time.getTime();
+        endTime = (float) glfwGetTime();
         deltaTime = endTime - beginTime;
         beginTime = endTime;
     }

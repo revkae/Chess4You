@@ -1,15 +1,10 @@
 package me.raven.Sandbox.Managers;
 
 import me.raven.Engine.Camera;
-import me.raven.Engine.Listeners.KeyboardListener;
-import me.raven.Engine.Renderer.BatchRenderer;
 import me.raven.Engine.Renderer.Renderer;
-import me.raven.Engine.Shapes.Quad;
 import me.raven.Engine.Utils.*;
 import me.raven.Engine.Window;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
+import me.raven.Sandbox.Game.BoardManager;
 import org.lwjgl.opengl.GL;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
@@ -24,8 +19,9 @@ public class GameManager {
     private Window window;
     private Camera camera;
     private SceneManager sceneManager;
-
     private Renderer renderer;
+
+    private BoardManager boardManager;
 
     public GameManager() {
         instance = this;
@@ -41,15 +37,15 @@ public class GameManager {
         glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
 
         sceneManager.createFirstScene();
-
-        renderer.createBatchRenderer();
-
-        Quad quad = new Quad(new Vector3f(300.f, 400.f, 0.0f), new Vector2f(50.f, 50.f));
+        renderer.createTextureBatchRenderer();
+        boardManager = new BoardManager();
 
         while (!glfwWindowShouldClose(window.getWindow())) {
             glClear(GL_COLOR_BUFFER_BIT);
 
-            renderer.draw(quad);
+            boardManager.onUpdate();
+            boardManager.onRender(renderer);
+
             renderer.onRender();
 
             glfwSwapBuffers(window.getWindow());
@@ -59,15 +55,6 @@ public class GameManager {
         }
         renderer.shutdown();
         end();
-    }
-
-    private void update() {
-        if (KeyboardListener.isPressed(GLFW_KEY_SPACE))
-            System.out.println("SPACE");
-    }
-
-    private void render() {
-
     }
 
     private void end() {

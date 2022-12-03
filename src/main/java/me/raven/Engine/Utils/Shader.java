@@ -51,11 +51,8 @@ public class Shader {
         glUniform1i(glGetUniformLocation(program, name), value);
     }
 
-    public void setIntArray(String name, int value0, int value1) {
-        int[] output = new int[2];
-        output[0] = value0;
-        output[1] = value1;
-        glUniform1iv(glGetUniformLocation(program, name), output);
+    public void setIntArray(String name, int[] value) {
+        glUniform1iv(glGetUniformLocation(program, name), value);
     }
 
     private String fileToString(String path) {

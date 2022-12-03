@@ -1,36 +1,42 @@
 package me.raven.Engine.Renderer;
 
+import me.raven.Engine.Drawable;
+import me.raven.Engine.Shapes.Quad;
 import me.raven.Engine.Utils.*;
 import me.raven.Sandbox.Managers.GameManager;
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
+import static org.lwjgl.opengl.GL45.glBindTextureUnit;
 
-public class BatchRenderer {
+public class TexturedBatchRenderer {
 
     private final int MAX_QUAD_SIZE = 10000;
     private final int MAX_VERTEX_SIZE = MAX_QUAD_SIZE * 4;
     private final int MAX_INDEX_SIZE = MAX_QUAD_SIZE * 6;
     private final int MAX_QUAD_FLOAT_SIZE = MAX_QUAD_SIZE * 40;
     private final int MAX_QUAD_BYTE_SIZE = MAX_QUAD_FLOAT_SIZE * Float.BYTES;
-
+    private final int MAX_TEXTURE_SLOT = 31;
+    private List<Integer> textureIds = new ArrayList<>(MAX_TEXTURE_SLOT);
     private float[] bufferData = new float[MAX_QUAD_FLOAT_SIZE];
     private float[] tempBufferData = new float[MAX_QUAD_FLOAT_SIZE];
     private int currentDataLength = 0;
     private int currentIndexLength = 0;
+    private int currentTextureIndex = 0;
     public Shader shader;
     public VertexArrayBuffer vertexArrayBuffer;
     public VertexBuffer vertexBuffer;
     public IndexBuffer indexBuffer;
-    Texture texture;
-    Texture texture1;
 
-    public BatchRenderer() {
-        texture = new Texture("resources/wall.jpg", 0);
-        texture1 = new Texture("resources/awesomeface.jpg", 1);
+    public TexturedBatchRenderer() {
+        for (int i = 0; i < MAX_TEXTURE_SLOT; i++) {
+            textureIds.add(0);
+        }
 
         shader = new Shader("vertex.vert", "fragment.frag");
         vertexArrayBuffer = new VertexArrayBuffer();
@@ -50,11 +56,17 @@ public class BatchRenderer {
         shader.setMat4f("ortho", GameManager.get().getCamera().getOrthoMatrix());
         shader.setMat4f("view", GameManager.get().getCamera().getViewMatrix());
         shader.setMat4f("model", new Matrix4f().identity());
+        int[] sampler = new int[32];
+        for (int i = 0; i < MAX_TEXTURE_SLOT; i++) {
+            sampler[i] = i;
+        }
+        shader.setIntArray("textures", sampler);
+        textureIds.set(0, 1);
     }
 
     public void draw() {
-        texture.bind();
-        texture1.bind();
+        glBindTextureUnit(0, textureIds.get(0));
+
 
         vertexArrayBuffer.bind();
         shader.use();
@@ -62,8 +74,9 @@ public class BatchRenderer {
         shader.unuse();
         vertexArrayBuffer.unbind();
 
-        texture.unbind();
-        texture1.unbind();
+//        for (int i = 0; i < currentTextureIndex; i++) {
+//            glBindTextureUnit(0, 0);
+//        }
     }
 
     public void end() {
@@ -71,23 +84,47 @@ public class BatchRenderer {
         glDeleteBuffers(indexBuffer.id);
         glDeleteVertexArrays(vertexArrayBuffer.id);
 
-        glDeleteTextures(texture.id);
-        glDeleteTextures(texture1.id);
+        for (Integer textureId : textureIds) {
+            glDeleteTextures(textureId);
+        }
     }
 
-    public void putData(float[] data) {
+    public void putData(Quad quad) {
+
+//        int textureIndex = 0;
+//        boolean isEqual = false;
+//        for (int i = 0; i < currentTextureIndex; i++) {
+//            if (textureIds.get(i) == quad.getTexture().id) {
+//                System.out.println("equal: " + i + " : " + quad.getTexture().id);
+//                isEqual = true;
+//                textureIndex = i;
+//                quad.setTexID(i);
+//            }
+//        }
+//
+//        if (textureIndex == 0 && !isEqual) {
+//            textureIndex = currentTextureIndex;
+//            textureIds.set(textureIndex, quad.getTexture().id);
+//            quad.setTexID(textureIndex);
+//            currentTextureIndex++;
+//        }
+
         int num = currentDataLength;
-        for (float datum : data) {
+        for (float datum : quad.getData()) {
             tempBufferData[num] = datum;
             num++;
         }
 
         currentIndexLength += 6;
-        currentDataLength += data.length;
+        currentDataLength += quad.getData().length;
     }
 
     public boolean hasEnoughSpace(float[] data) {
         return currentDataLength + data.length <= bufferData.length;
+    }
+
+    public boolean hasEnoughSlot() {
+        return currentTextureIndex < 31;
     }
 
     public void updateData() {

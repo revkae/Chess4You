@@ -12,70 +12,90 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Renderer {
 
-    private Queue<BatchRenderer> batchRenderers = new ConcurrentLinkedQueue<>();
+    private Queue<TexturedBatchRenderer> texturedBatchRenderers = new ConcurrentLinkedQueue<>();
+    private Queue<ColoredBatchRenderer> coloredBatchRenderers = new ConcurrentLinkedQueue<>();
 
     public Renderer() {
 
     }
 
     public void onRender() {
-        for (BatchRenderer renderer : batchRenderers) {
+        for (TexturedBatchRenderer renderer : texturedBatchRenderers) {
+            renderer.updateData();
+            renderer.draw();
+        }
+        for (ColoredBatchRenderer renderer : coloredBatchRenderers) {
             renderer.updateData();
             renderer.draw();
         }
     }
 
-    public void draw(Drawable drawable) {
-        float[] data = drawable.getData();
-        BatchRenderer batchRenderer = null;
-        for (BatchRenderer renderer : batchRenderers) {
-            if (renderer.hasEnoughSpace(data)) {
+    public void texturedDraw(Quad quad) {
+        float[] data = quad.getData();
+        TexturedBatchRenderer batchRenderer = null;
+        for (TexturedBatchRenderer renderer : texturedBatchRenderers) {
+            if (renderer.hasEnoughSpace(data) || renderer.hasEnoughSlot()) {
                 batchRenderer = renderer;
             }
         }
 
         if (batchRenderer == null) {
-            batchRenderer = new BatchRenderer();
-            batchRenderer.putData(data);
-            batchRenderers.add(batchRenderer);
+            batchRenderer = new TexturedBatchRenderer();
+            batchRenderer.putData(quad);
+            texturedBatchRenderers.add(batchRenderer);
         } else {
-            batchRenderer.putData(data);
+            batchRenderer.putData(quad);
         }
     }
 
-    public void drawQuad(Vector3f position, Vector4f color, Vector2f scale, float texID) {
-        float[] data = Vertex.createQuad(position, color, scale, texID);
-        BatchRenderer batchRenderer = null;
-        for (BatchRenderer renderer : batchRenderers) {
+    public void coloredDraw(Drawable drawable) {
+        float[] data = drawable.getData();
+        ColoredBatchRenderer batchRenderer = null;
+        for (ColoredBatchRenderer renderer : coloredBatchRenderers) {
             if (renderer.hasEnoughSpace(data)) {
                 batchRenderer = renderer;
             }
         }
 
         if (batchRenderer == null) {
-            batchRenderer = new BatchRenderer();
+            batchRenderer = new ColoredBatchRenderer();
             batchRenderer.putData(data);
-            batchRenderers.add(batchRenderer);
+            coloredBatchRenderers.add(batchRenderer);
         } else {
             batchRenderer.putData(data);
         }
     }
 
     public void shutdown() {
-        for (BatchRenderer renderer : batchRenderers) {
+        for (TexturedBatchRenderer renderer : texturedBatchRenderers) {
+            renderer.end();
+        }
+        for (ColoredBatchRenderer renderer : coloredBatchRenderers) {
             renderer.end();
         }
     }
 
-    public void createBatchRenderer() {
-        batchRenderers.add(new BatchRenderer());
+    public void createTextureBatchRenderer() {
+        texturedBatchRenderers.add(new TexturedBatchRenderer());
     }
 
-    public void removeBatchRenderer() {
+    public void createColoredBatchRenderer() {
+        coloredBatchRenderers.add(new ColoredBatchRenderer());
+    }
+
+    public void removeTexturedBatchRenderer() {
         // later gonna add it
     }
 
-    public Queue<BatchRenderer> getBatchRenderers() {
-        return batchRenderers;
+    public void removeColoredBatchRenderer() {
+        // later gonna do it
+    }
+
+    public Queue<TexturedBatchRenderer> getTexturedBatchRenderers() {
+        return texturedBatchRenderers;
+    }
+
+    public Queue<ColoredBatchRenderer> getColoredBatchRenderers() {
+        return coloredBatchRenderers;
     }
 }

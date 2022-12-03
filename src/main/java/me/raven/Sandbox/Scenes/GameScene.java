@@ -17,7 +17,12 @@ public class GameScene extends Scene {
     }
 
     @Override
-    public void update(float dt) {
+    public void start() {
+
+    }
+
+    @Override
+    public void onUpdate(float dt) {
 
         if (KeyboardListener.isPressed(GLFW_KEY_P)) {
             SceneManager.get().switchScene();
@@ -27,7 +32,9 @@ public class GameScene extends Scene {
     }
 
     @Override
-    public void render(float dt) {
+    public void onRender(float dt) {
 
     }
+
+
 }

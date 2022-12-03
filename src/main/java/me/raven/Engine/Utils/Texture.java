@@ -9,20 +9,18 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL14.GL_MIRRORED_REPEAT;
+import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 import static org.lwjgl.stb.STBImage.*;
 
 public class Texture {
     private String filepath;
-    public int slot;
     public int id;
 
-    public Texture(String filepath, int slot) {
+    public Texture(String filepath) {
         this.filepath = filepath;
-        this.slot = slot;
 
         id = glGenTextures();
-        glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, id);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
@@ -33,7 +31,7 @@ public class Texture {
         IntBuffer width = BufferUtils.createIntBuffer(1);
         IntBuffer height = BufferUtils.createIntBuffer(1);
         IntBuffer channels = BufferUtils.createIntBuffer(1);
-        ByteBuffer image = stbi_load(filepath, width, height, channels, 0);
+        ByteBuffer image = stbi_load("resources/" + filepath, width, height, channels, 0);
 
         if (image != null) {
             stbi_set_flip_vertically_on_load(true);
@@ -49,15 +47,14 @@ public class Texture {
         } else {
             assert false : "texture not loaded";
         }
+        glBindBuffer(GL_TEXTURE_2D, 0);
     }
 
     public void bind() {
-        glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, id);
     }
 
     public void unbind() {
-        glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 }
