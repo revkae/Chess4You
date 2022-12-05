@@ -9,6 +9,14 @@ public enum PieceColor {
         return c0 == c1;
     }
 
+    public static PieceColor changeTurn(PieceColor turn) {
+        if (turn == BLACK) {
+            return WHITE;
+        } else {
+            return BLACK;
+        }
+    }
+
     public static PieceColor getOpposite(PieceColor color) {
         if (color == BLACK) {
             return WHITE;

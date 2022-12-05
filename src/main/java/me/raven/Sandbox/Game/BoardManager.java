@@ -25,6 +25,14 @@ public class BoardManager {
     private List<Quad> board = new ArrayList<>(64);
     private Queue<Integer> selectedTiles = new ConcurrentLinkedQueue<>();
 
+    private List<Integer> topTiles = new ArrayList<>();
+    private List<Integer> bottomTiles = new ArrayList<>();
+    private List<Integer> rightTiles = new ArrayList<>();
+    private List<Integer> leftTiles = new ArrayList<>();
+
+    private boolean isRightPressed = false;
+    private boolean isLeftPressed = false;
+
     public BoardManager() {
         Texture whiteTexture = new Texture("resources/awesomeface.jpg");
         Texture blackTexture = new Texture("resources/wall.jpg");
@@ -42,23 +50,47 @@ public class BoardManager {
                 num++;
             }
         }
+        for (int i = 1; i < 9; i++) {
+            topTiles.add((8 * i) - 1);
+        }
+
+        for (int i = 1; i < 8; i++) {
+            bottomTiles.add((8 * i));
+        }
+
+        for (int i = 0; i < 8; i++) {
+            leftTiles.add(i);
+        }
+
+        for (int i = 0; i < 8; i++) {
+            rightTiles.add(63 - i);
+        }
     }
 
     public void onUpdate() {
-        if (MouseListener.isPressed(GLFW_MOUSE_BUTTON_RIGHT)) {
+        if (MouseListener.isPressed(GLFW_MOUSE_BUTTON_RIGHT) && !isRightPressed) {
             for (int i = 0; i < board.size(); i++) {
                 Quad quad = board.get(i);
                 if (quad.getCollision().isInside(new Vector3f(MouseListener.getCursorPos().x, MouseListener.getCursorPos().y, 0.0f))) {
                     if (quad.getColor().equals(SELECTED_TILE_COLOR)) {
                         unselectTile(i);
                     } else {
-                        System.out.println("num: " + i);
+                        System.out.println(i);
                         selectTile(i);
                     }
                 }
             }
-        } else if (MouseListener.isPressed(GLFW_MOUSE_BUTTON_LEFT)) {
+            isRightPressed = true;
+        }
+        else if (MouseListener.isReleased(GLFW_MOUSE_BUTTON_RIGHT) && isRightPressed) {
+            isRightPressed = false;
+        }
+        else if (MouseListener.isPressed(GLFW_MOUSE_BUTTON_LEFT) && !isLeftPressed) {
             unselectAllTiles();
+            isLeftPressed = true;
+        }
+        else if (MouseListener.isReleased(GLFW_MOUSE_BUTTON_LEFT) && isLeftPressed) {
+            isLeftPressed = false;
         }
     }
 
@@ -89,5 +121,9 @@ public class BoardManager {
 
     public List<Quad> getBoard() {
         return board;
+    }
+
+    public List<Integer> getTopTiles() {
+        return topTiles;
     }
 }

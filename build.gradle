@@ -43,6 +43,7 @@ dependencies {
     runtimeOnly "org.lwjgl:lwjgl-shaderc::$lwjglNatives"
     runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
     implementation "org.joml:joml:${jomlVersion}"
+    implementation 'org.javatuples:javatuples:1.2'
 }
 
 test {

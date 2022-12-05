@@ -1,6 +1,7 @@
 package me.raven.Sandbox.Managers;
 
 import me.raven.Engine.Camera;
+import me.raven.Engine.Listeners.MouseListener;
 import me.raven.Engine.Renderer.Renderer;
 import me.raven.Engine.Utils.*;
 import me.raven.Engine.Window;
@@ -46,13 +47,11 @@ public class GameManager {
         while (!glfwWindowShouldClose(window.getWindow())) {
             glClear(GL_COLOR_BUFFER_BIT);
 
-            pieceManager.onUpdate();
-
-
             boardManager.onUpdate();
             boardManager.onRender(renderer);
-            pieceManager.onRender(renderer);
 
+            pieceManager.onUpdate();
+            pieceManager.onRender(renderer);
 
             renderer.onRender();
 

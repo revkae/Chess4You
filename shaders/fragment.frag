@@ -13,17 +13,9 @@ void main()
 {
     int texID = int(vTexID);
 
-    FragColor = texture(textures[nonuniformEXT(texID)], vTexCoord);
-
-//    switch (texID) {
-//        case 0:
-//            FragColor = texture(textures[0], vTexCoord) * vColor;
-//            break;
-//        case 1:
-//            FragColor = texture(textures[1], vTexCoord) * vColor;
-//            break;
-//        case 2:
-//            FragColor = texture(textures[2], vTexCoord) * vColor;
-//            break;
-//    }
+    vec4 texColor = texture(textures[nonuniformEXT(texID)], vTexCoord) * vColor;
+    if (texColor.a < 0.1) {
+        discard;
+    }
+    FragColor = texColor;
 }

@@ -12,6 +12,7 @@ import org.joml.Vector4f;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -30,14 +31,18 @@ public abstract class Piece {
     public PieceColor pieceColor;
 
     public List<Quad> board;
-    public List<Integer> possibleMoves;
+    public Queue<Integer> possibleMoves;
     public List<Piece> possiblePreys;
 
     public boolean isSelected = false;
 
+    public boolean isMovePressed = false;
+    public boolean isPreyPressed = false;
+    public boolean isSelectionPressed = false;
+
     public Piece(Vector2f scale, Texture texture, int value, PieceColor pieceColor, int tile) {
         this.board = GameManager.get().getBoardManager().getBoard();
-        this.possibleMoves = new ArrayList<>();
+        this.possibleMoves = new ConcurrentLinkedQueue<>();
         this.possiblePreys = new ArrayList<>();
         this.piece = new Quad(board.get(tile).getTransform().position, scale, texture);
         this.value = value;
@@ -51,51 +56,100 @@ public abstract class Piece {
 
     public void onUpdate() {
 
+        selectionChecker();
         moveChecker();
         preyChecker();
-        selectionChecker();
+
     }
 
     public abstract void specialMove();
 
     public void moveChecker() {
-        if (MouseListener.isPressed(GLFW_MOUSE_BUTTON_LEFT) && isSelected) {
+        if (MouseListener.isPressed(GLFW_MOUSE_BUTTON_LEFT) && isSelected && !isMovePressed) {
             for (Integer tile : possibleMoves) {
                 if (board.get(tile).getCollision().isInside(new Vector3f(MouseListener.getCursorPos().x, MouseListener.getCursorPos().y, 0.0f))) {
-                    movePiece(board.get(tile).getTransform().position);
-                    specialMove();
+                    movePiece(board.get(tile).getTransform().position, tile);
+                    break;
                 }
             }
+            isMovePressed = true;
+        } else if (MouseListener.isReleased(GLFW_MOUSE_BUTTON_LEFT) && isMovePressed) {
+            isMovePressed = false;
         }
     }
 
     public void preyChecker() {
-        if (MouseListener.isPressed(GLFW_MOUSE_BUTTON_LEFT) && isSelected) {
+        if (MouseListener.isPressed(GLFW_MOUSE_BUTTON_LEFT) && isSelected && !isPreyPressed) {
             for (Piece prey : possiblePreys) {
                 if (prey.getPiece().getCollision().isInside(new Vector3f(MouseListener.getCursorPos().x, MouseListener.getCursorPos().y, 0.0f))) {
-                    GameManager.get().getPieceManager().removePiece(prey);
+                    movePieceAndEat(prey, prey.getPiece().getTransform().position, prey.tile);
+                    break;
                 }
             }
+            isPreyPressed = true;
+        } else if (MouseListener.isReleased(GLFW_MOUSE_BUTTON_LEFT) && isPreyPressed) {
+            isPreyPressed = false;
         }
     }
 
     public void selectionChecker() {
-        if (MouseListener.isPressed(GLFW_MOUSE_BUTTON_LEFT)) {
-            System.out.println("hello");
+        if (MouseListener.isPressed(GLFW_MOUSE_BUTTON_LEFT) && !isMovePressed && !isSelectionPressed) {
             if (piece.getCollision().isInside(new Vector3f(MouseListener.getCursorPos().x, MouseListener.getCursorPos().y, 0.0f))) {
                 if (!isSelected) {
-                    System.out.println("select");
                     select();
                 } else {
-                    System.out.println("unselect");
                     unselect();
                 }
             }
+            isSelectionPressed = true;
+        } else if (MouseListener.isReleased(GLFW_MOUSE_BUTTON_LEFT) && isSelectionPressed) {
+            isSelectionPressed = false;
         }
     }
 
-    private void movePiece(Vector3f position) {
+    public boolean isMovePossible(int move) {
+        if (move >= board.size() || move < 0) {
+            return false;
+        }
+        for (Piece tempPiece : getPieceManager().getPieces()) {
+            if (move == tempPiece.tile) {
+                return false;
+            }
+        }
+        for (Integer topTile : getBoardManager().getTopTiles()) {
+            if (move == topTile + 1) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isPreyPossible(int move) {
+        if (move >= board.size() || move < 0) {
+            return false;
+        }
+        for (Piece tempPiece : getPieceManager().getPieces()) {
+            if (tempPiece.pieceColor == pieceColor) continue;
+
+            if (tempPiece.tile == move) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void movePiece(Vector3f position, int tile) {
         piece.setPosition(position);
+        this.tile = tile;
+        getPieceManager().changeTurn();
+        unselect();
+    }
+
+    private void movePieceAndEat(Piece prey, Vector3f position, int tile) {
+        piece.setPosition(position);
+        this.tile = tile;
+        GameManager.get().getPieceManager().removePiece(prey);
+        getPieceManager().changeTurn();
         unselect();
     }
 
@@ -105,20 +159,60 @@ public abstract class Piece {
 
         calculatePossibleMoves();
         calculatePossiblePreys();
+
+        highlightPossibleMoves();
     }
 
     private void unselect() {
         piece.setColor(NORMAL_COLOR);
         isSelected = false;
+
+        unHighlightPossibleMoves();
+
         possibleMoves.clear();
         possiblePreys.clear();
+    }
+
+    private void highlightPossibleMoves() {
+        for (Integer move : possibleMoves) {
+            getBoardManager().getBoard().get(move).setColor(SELECTED_COLOR);
+        }
+        for (Piece prey : possiblePreys) {
+            getBoardManager().getBoard().get(prey.tile).setColor(SELECTED_COLOR);
+        }
+    }
+
+    private void unHighlightPossibleMoves() {
+        for (Integer move : possibleMoves) {
+            getBoardManager().getBoard().get(move).setColor(NORMAL_COLOR);
+        }
+        for (Piece prey : possiblePreys) {
+            getBoardManager().getBoard().get(prey.tile).setColor(NORMAL_COLOR);
+        }
+    }
+
+    public void addMove(int num) {
+        if (isMovePossible(tile + num)) {
+            possibleMoves.add(tile + num);
+        }
+    }
+
+    public void addPrey(int num) {
+        if (isPreyPossible(num + tile)) {
+            for (Piece tempPiece : getPieceManager().getPieces()) {
+                if (tempPiece.tile == num + tile) {
+                    possiblePreys.add(tempPiece);
+                    break;
+                }
+            }
+        }
     }
 
     public Quad getPiece() {
         return piece;
     }
 
-    public List<Integer> getPossibleMoves() {
+    public Queue<Integer> getPossibleMoves() {
         return possibleMoves;
     }
 
@@ -128,6 +222,10 @@ public abstract class Piece {
 
     public PieceManager getPieceManager() {
         return GameManager.get().getPieceManager();
+    }
+
+    public BoardManager getBoardManager() {
+        return GameManager.get().getBoardManager();
     }
 
     protected abstract void calculatePossibleMoves();

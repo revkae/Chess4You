@@ -1,10 +1,15 @@
 package me.raven.Engine.Listeners;
 
 import me.raven.Engine.Window;
+import org.javatuples.Pair;
 import org.joml.Vector2f;
 
-import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
-import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static org.lwjgl.glfw.GLFW.*;
 
 public class MouseListener {
 
@@ -39,11 +44,10 @@ public class MouseListener {
     }
 
     public static boolean isPressed(int button) {
-        if (!once[button]) {
-            once[button] = true;
-            return buttons[button];
-        } else {
-            return false;
-        }
+        return buttons[button];
+    }
+
+    public static boolean isReleased(int button) {
+        return !buttons[button];
     }
 }
