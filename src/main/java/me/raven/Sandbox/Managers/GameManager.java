@@ -1,20 +1,16 @@
 package me.raven.Sandbox.Managers;
 
-import me.raven.Engine.Camera;
-import me.raven.Engine.Listeners.MouseListener;
 import me.raven.Engine.Renderer.Renderer;
-import me.raven.Engine.Utils.*;
-import me.raven.Engine.Window;
-import me.raven.Sandbox.Game.BoardManager;
-import me.raven.Sandbox.Game.Piece;
-import me.raven.Sandbox.Game.PieceManager;
+import me.raven.Engine.Utils.Camera;
+import me.raven.Engine.Utils.DeltaTime;
+import me.raven.Engine.Utils.Window;
+import me.raven.Sandbox.Game.Board.BoardManager;
+import me.raven.Sandbox.Game.Piece.PieceManager;
 import org.lwjgl.opengl.GL;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
-import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 public class GameManager {
 
@@ -28,7 +24,7 @@ public class GameManager {
 
     public GameManager() {
         instance = this;
-        this.window = Window.get();
+        this.window = new Window(800, 800, "chessforyou");
         this.camera = new Camera();
         this.sceneManager = new SceneManager();
         this.renderer = new Renderer();

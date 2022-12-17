@@ -1,7 +1,7 @@
-package me.raven.Engine;
+package me.raven.Engine.Utils;
 
-import me.raven.Engine.Listeners.KeyboardListener;
-import me.raven.Engine.Listeners.MouseListener;
+import me.raven.Engine.Listeners.Keyboard;
+import me.raven.Engine.Listeners.Mouse;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.system.MemoryStack;
@@ -9,7 +9,7 @@ import org.lwjgl.system.MemoryStack;
 import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.glViewport;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -47,10 +47,10 @@ public class Window {
         if ( window == NULL )
             throw new RuntimeException("Failed to create the GLFW window");
 
-        glfwSetKeyCallback(window, KeyboardListener::key_callback);
-        glfwSetCursorPosCallback(window, MouseListener::cursor_position_callback);
-        glfwSetMouseButtonCallback(window, MouseListener::mouse_button_callback);
-        glfwSetScrollCallback(window, MouseListener::scroll_callback);
+        glfwSetKeyCallback(window, Keyboard::key_callback);
+        glfwSetCursorPosCallback(window, Mouse::cursor_position_callback);
+        glfwSetMouseButtonCallback(window, Mouse::mouse_button_callback);
+        glfwSetScrollCallback(window, Mouse::scroll_callback);
         glfwSetFramebufferSizeCallback(window, this::framebuffer_size_callback);
 
         try (MemoryStack stack = stackPush()) {
@@ -81,7 +81,7 @@ public class Window {
 
     public static Window get() {
         if (Window.instance == null) {
-            Window.instance = new Window(1280, 720, "Chess For You");
+            Window.instance = new Window(800, 800, "Chess For You");
         }
         return Window.instance;
     }

@@ -1,8 +1,9 @@
 package me.raven.Engine.Shapes;
 
 import me.raven.Engine.Components.Collision;
-import me.raven.Engine.Drawable;
-import me.raven.Engine.Utils.*;
+import me.raven.Engine.Utils.Texture;
+import me.raven.Engine.Utils.Transform;
+import me.raven.Engine.Utils.Vertex;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;

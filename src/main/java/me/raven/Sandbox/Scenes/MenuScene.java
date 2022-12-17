@@ -1,8 +1,8 @@
 package me.raven.Sandbox.Scenes;
 
-import me.raven.Engine.Listeners.KeyboardListener;
-import me.raven.Sandbox.Managers.SceneManager;
+import me.raven.Engine.Listeners.Keyboard;
 import me.raven.Engine.Shapes.Quad;
+import me.raven.Sandbox.Managers.SceneManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ public class MenuScene extends Scene {
 
     @Override
     public void onUpdate(float dt) {
-        if (KeyboardListener.isPressed(GLFW_KEY_O)) {
+        if (Keyboard.isPressed(GLFW_KEY_O)) {
             SceneManager.get().switchScene();
             System.out.println("switched to game scene");
         }

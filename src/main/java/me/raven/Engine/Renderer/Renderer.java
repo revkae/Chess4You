@@ -1,11 +1,8 @@
 package me.raven.Engine.Renderer;
 
-import me.raven.Engine.Drawable;
+import me.raven.Engine.Shapes.Drawable;
 import me.raven.Engine.Shapes.Quad;
-import me.raven.Engine.Utils.Vertex;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
+import me.raven.Engine.Utils.Camera;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;

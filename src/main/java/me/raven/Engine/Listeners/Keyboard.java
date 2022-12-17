@@ -1,8 +1,9 @@
 package me.raven.Engine.Listeners;
 
-import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
+import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 
-public class KeyboardListener {
+public class Keyboard {
 
     static boolean[] keys = new boolean[500];
 

@@ -1,17 +1,12 @@
 package me.raven.Engine.Listeners;
 
-import me.raven.Engine.Window;
-import org.javatuples.Pair;
+import me.raven.Engine.Utils.Window;
 import org.joml.Vector2f;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
+import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 
-import static org.lwjgl.glfw.GLFW.*;
-
-public class MouseListener {
+public class Mouse {
 
     static boolean[] buttons = new boolean[7];
     static boolean[] once = new boolean[7];

@@ -1,9 +1,7 @@
 package me.raven.Engine.Renderer;
 
-import me.raven.Engine.Drawable;
 import me.raven.Engine.Shapes.Quad;
 import me.raven.Engine.Utils.*;
-import me.raven.Sandbox.Managers.GameManager;
 import org.joml.Matrix4f;
 
 import java.util.ArrayList;
@@ -53,16 +51,14 @@ public class TexturedBatchRenderer {
         shader.use();
         shader.setInt("fTexture0", 0);
         shader.setInt("fTexture1", 1);
-        shader.setMat4f("ortho", GameManager.get().getCamera().getOrthoMatrix());
-        shader.setMat4f("view", GameManager.get().getCamera().getViewMatrix());
+        shader.setMat4f("ortho", Camera.get().getOrthoMatrix());
+        shader.setMat4f("view", Camera.get().getViewMatrix());
         shader.setMat4f("model", new Matrix4f().identity());
         int[] sampler = new int[32];
         for (int i = 0; i < MAX_TEXTURE_SLOT; i++) {
             sampler[i] = i;
         }
         shader.setIntArray("textures", sampler);
-//        textureIds.set(0, 1);
-//        textureIds.set(1, 2);
     }
 
     public void draw() {

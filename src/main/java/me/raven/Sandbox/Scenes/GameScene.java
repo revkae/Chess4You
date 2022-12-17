@@ -1,6 +1,6 @@
 package me.raven.Sandbox.Scenes;
 
-import me.raven.Engine.Listeners.KeyboardListener;
+import me.raven.Engine.Listeners.Keyboard;
 import me.raven.Sandbox.Managers.SceneManager;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_P;
@@ -24,7 +24,7 @@ public class GameScene extends Scene {
     @Override
     public void onUpdate(float dt) {
 
-        if (KeyboardListener.isPressed(GLFW_KEY_P)) {
+        if (Keyboard.isPressed(GLFW_KEY_P)) {
             SceneManager.get().switchScene();
             System.out.println("switched to menu scene");
         }

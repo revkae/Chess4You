@@ -1,11 +1,7 @@
 package me.raven.Engine.Renderer;
 
 import me.raven.Engine.Utils.*;
-import me.raven.Sandbox.Managers.GameManager;
 import org.joml.Matrix4f;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
@@ -39,8 +35,8 @@ public class ColoredBatchRenderer {
         VertexAttribPointer colorAttrib = new VertexAttribPointer(7, 4, 1, 3);
 
         shader.use();
-        shader.setMat4f("ortho", GameManager.get().getCamera().getOrthoMatrix());
-        shader.setMat4f("view", GameManager.get().getCamera().getViewMatrix());
+        shader.setMat4f("ortho", Camera.get().getOrthoMatrix());
+        shader.setMat4f("view", Camera.get().getViewMatrix());
         shader.setMat4f("model", new Matrix4f().identity());
     }
 

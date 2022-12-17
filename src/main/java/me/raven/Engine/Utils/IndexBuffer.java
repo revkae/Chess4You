@@ -1,7 +1,6 @@
 package me.raven.Engine.Utils;
 
 import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 
 public class IndexBuffer {
     public int id;
