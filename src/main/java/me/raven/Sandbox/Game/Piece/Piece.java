@@ -5,7 +5,6 @@ import me.raven.Engine.Renderer.Renderer;
 import me.raven.Engine.Shapes.Quad;
 import me.raven.Engine.Utils.Texture;
 import me.raven.Sandbox.Game.Colors;
-import me.raven.Sandbox.Game.MousePress;
 import me.raven.Sandbox.Managers.GameManager;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -17,15 +16,18 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-public abstract class Piece implements MoveCalculator {
+public abstract class Piece implements MoveCalculator, PreyCalculator {
 
-    public MousePress mousePress;
     public PieceData data;
     public Queue<Integer> moves;
     public List<Piece> preys;
 
+    public boolean isSelected = false;
+    public boolean isMovePressed = false;
+    public boolean isPreyPressed = false;
+    public boolean isSelectionPressed = false;
+
     public Piece(Vector2f scale, Texture texture, int value, PieceColors color, int tile) {
-        this.mousePress = new MousePress();
         this.moves = new ConcurrentLinkedQueue<>();
         this.preys = new ArrayList<>();
         this.data = new PieceData(
@@ -46,40 +48,40 @@ public abstract class Piece implements MoveCalculator {
     }
 
     public void moveChecker() {
-        if (Mouse.isPressed(GLFW_MOUSE_BUTTON_LEFT) && mousePress.isSelected && !mousePress.isMovePressed) {
+        if (Mouse.isPressed(GLFW_MOUSE_BUTTON_LEFT) && isSelected && !isMovePressed) {
             for (Integer tile : moves) {
                 if (isInside(GameManager.get().getBoardManager().getBoard().get(tile), Mouse.getCursorPos().x, Mouse.getCursorPos().y)) {
                     movePiece(GameManager.get().getBoardManager().getBoard().get(tile).getTransform().position, tile);
                     break;
                 }
             }
-            mousePress.isMovePressed = true;
-        } else if (Mouse.isReleased(GLFW_MOUSE_BUTTON_LEFT) && mousePress.isMovePressed) {
-            mousePress.isMovePressed = false;
+            isMovePressed = true;
+        } else if (Mouse.isReleased(GLFW_MOUSE_BUTTON_LEFT) && isMovePressed) {
+            isMovePressed = false;
         }
     }
 
     public void preyChecker() {
-        if (Mouse.isPressed(GLFW_MOUSE_BUTTON_LEFT) && mousePress.isSelected && !mousePress.isPreyPressed) {
+        if (Mouse.isPressed(GLFW_MOUSE_BUTTON_LEFT) && isSelected && !isPreyPressed) {
             for (Piece prey : preys) {
                 if (isInside(prey.data.piece, Mouse.getCursorPos().x, Mouse.getCursorPos().y)) {
                     movePieceAndEat(prey, prey.data.piece.getTransform().position, prey.data.tile);
                     break;
                 }
             }
-            mousePress.isPreyPressed = true;
-        } else if (Mouse.isReleased(GLFW_MOUSE_BUTTON_LEFT) && mousePress.isPreyPressed) {
-            mousePress.isPreyPressed = false;
+            isPreyPressed = true;
+        } else if (Mouse.isReleased(GLFW_MOUSE_BUTTON_LEFT) && isPreyPressed) {
+            isPreyPressed = false;
         }
     }
 
     public void selectionChecker() {
-        if (Mouse.isPressed(GLFW_MOUSE_BUTTON_LEFT) && !mousePress.isMovePressed && !mousePress.isSelectionPressed) {
+        if (Mouse.isPressed(GLFW_MOUSE_BUTTON_LEFT) && !isMovePressed && !isSelectionPressed) {
             if (isInside(data.piece, Mouse.getCursorPos().x, Mouse.getCursorPos().y)) selection();
 
-            mousePress.isSelectionPressed = true;
-        } else if (Mouse.isReleased(GLFW_MOUSE_BUTTON_LEFT) && mousePress.isSelectionPressed) {
-            mousePress.isSelectionPressed = false;
+            isSelectionPressed = true;
+        } else if (Mouse.isReleased(GLFW_MOUSE_BUTTON_LEFT) && isSelectionPressed) {
+            isSelectionPressed = false;
         }
     }
 
@@ -103,11 +105,25 @@ public abstract class Piece implements MoveCalculator {
     }
 
     public void addMoves(List<Integer> moves) {
+        if (moves == null) return;
+
         this.moves.addAll(moves);
     }
 
+    public void addPreys(List<Piece> preys) {
+        if (preys == null) return;
+
+        this.preys.addAll(preys);
+    }
+
     private void selection() {
-        if (!mousePress.isSelected) select();
+        for (Piece piece : GameManager.get().getPieceManager().getPieces()) {
+            if (piece == this) continue;
+
+            if (piece.isSelected) return;
+        }
+
+        if (!isSelected) select();
         else unselect();
     }
 
@@ -119,7 +135,7 @@ public abstract class Piece implements MoveCalculator {
 
         highlightPossibleMoves();
 
-        mousePress.isSelected = true;
+        isSelected = true;
     }
 
     private void unselect() {
@@ -129,7 +145,7 @@ public abstract class Piece implements MoveCalculator {
 
         clearAllMoves();
 
-        mousePress.isSelected = false;
+        isSelected = false;
     }
 
     private void highlightPossibleMoves() {

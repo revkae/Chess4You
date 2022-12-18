@@ -3,7 +3,6 @@ package me.raven.Sandbox.Game.Board;
 import me.raven.Engine.Listeners.Mouse;
 import me.raven.Engine.Shapes.Quad;
 import me.raven.Sandbox.Game.Colors;
-import me.raven.Sandbox.Game.MousePress;
 import me.raven.Sandbox.Managers.GameManager;
 import org.joml.Vector2f;
 
@@ -15,9 +14,11 @@ import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
 
 public class BoardSelection {
     private Queue<Integer> selectedTileNums = new ConcurrentLinkedQueue<>();
+    private boolean isRightPressed = false;
+    private boolean isLeftPressed = false;
 
     public void onUpdate() {
-        if (Mouse.isPressed(GLFW_MOUSE_BUTTON_RIGHT) && !MousePress.isRightPressed) {
+        if (Mouse.isPressed(GLFW_MOUSE_BUTTON_RIGHT) && !isRightPressed) {
             for (int i = 0; i < GameManager.get().getBoardManager().getBoard().size(); i++) {
                 Quad quad = GameManager.get().getBoardManager().getBoard().get(i);
                 if (quad.getCollision().isInside(new Vector2f(Mouse.getCursorPos().x, Mouse.getCursorPos().y))) {
@@ -29,17 +30,17 @@ public class BoardSelection {
                     }
                 }
             }
-            MousePress.isRightPressed = true;
+            isRightPressed = true;
         }
-        else if (Mouse.isReleased(GLFW_MOUSE_BUTTON_RIGHT) && MousePress.isRightPressed) {
-            MousePress.isRightPressed = false;
+        else if (Mouse.isReleased(GLFW_MOUSE_BUTTON_RIGHT) && isRightPressed) {
+            isRightPressed = false;
         }
-        else if (Mouse.isPressed(GLFW_MOUSE_BUTTON_LEFT) && !MousePress.isLeftPressed) {
+        else if (Mouse.isPressed(GLFW_MOUSE_BUTTON_LEFT) && !isLeftPressed) {
             unselectAllTiles();
-            MousePress.isLeftPressed = true;
+            isLeftPressed = true;
         }
-        else if (Mouse.isReleased(GLFW_MOUSE_BUTTON_LEFT) && MousePress.isLeftPressed) {
-            MousePress.isLeftPressed = false;
+        else if (Mouse.isReleased(GLFW_MOUSE_BUTTON_LEFT) && isLeftPressed) {
+            isLeftPressed = false;
         }
     }
 

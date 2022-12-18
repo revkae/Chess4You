@@ -3,7 +3,10 @@ package me.raven.Sandbox.Game.Piece.Pieces;
 import me.raven.Engine.Utils.Texture;
 import me.raven.Sandbox.Game.Piece.Piece;
 import me.raven.Sandbox.Game.Piece.PieceColors;
+import org.javatuples.Pair;
 import org.joml.Vector2f;
+
+import java.util.List;
 
 public class Knight extends Piece {
 
@@ -18,7 +21,9 @@ public class Knight extends Piece {
 
     @Override
     protected void calculatePossibleMoves() {
-        addMoves(generateKnightMoves(this.data.tile));
+        Pair<List<Integer>, List<Piece>> temp = generateKnightMoves(this.data.tile, this.data.color);
+        addMoves(temp.getValue0() == null ? null : temp.getValue0());
+        addPreys(temp.getValue1() == null ? null : temp.getValue1());
     }
 
     @Override

@@ -8,28 +8,19 @@ import org.joml.Vector2f;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class PieceManager {
-    private List<Piece> pieces = new ArrayList<>();
+    private Queue<Piece> pieces = new ConcurrentLinkedQueue<>();
 
     private PieceColors turn = PieceColors.WHITE;
 
+    Texture blackPawn = new Texture("resources/black_pawn.png");
+    Texture whitePawn = new Texture("resources/white_pawn.png");
+
     public PieceManager() {
-//        Texture blackPawn = new Texture("resources/black_pawn.png");
-//        pieces.add(new Pawn(new Vector2f(100.f, 100.f), blackPawn, PieceColors.BLACK, 3));
-//        Texture whitePawn = new Texture("resources/white_pawn.png");
-//        pieces.add(new Pawn(new Vector2f(100.f, 100.f), whitePawn, PieceColors.WHITE, 13));
-//        Texture whiteHorse = new Texture("resources/white_horse.png");
-//        pieces.add(new Knight(new Vector2f(100.f, 100.f), whiteHorse, PieceColors.WHITE, 34));
-//        Texture whiteRock = new Texture("resources/white_rock.png");
-//        pieces.add(new Rock(new Vector2f(100.f, 100.f), whiteRock, PieceColors.WHITE, 0));
-//        Texture whiteBishop = new Texture("resources/white_bishop.png");
-//        pieces.add(new Bishop(new Vector2f(100.f, 100.f), whiteBishop, PieceColors.WHITE, 25));
-//        Texture whiteKing = new Texture("resources/white_king.png");
-//        pieces.add(new King(new Vector2f(100.f, 100.f), whiteKing, PieceColors.WHITE, 24));
-//        Texture whiteQueen = new Texture("resources/white_queen.png");
-//        pieces.add(new Queen(new Vector2f(100.f, 100.f), whiteQueen, PieceColors.WHITE, 10));
-        PiecePlacerFEN.placePieces("r1b1k1nr/p2p1pNp/n2B4/1p1NP2P/6P1/3P1Q2/P1P1K3/q5b1", this);
+        PiecePlacerFEN.placePieces("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR", this);
     }
 
     public void onUpdate() {
@@ -49,20 +40,22 @@ public class PieceManager {
     }
 
     public void changeTurn() {
-        //turn = PieceColor.changeTurn(turn);
+        turn = PieceColors.changeTurn(turn);
     }
 
-    public List<Piece> getPieces() {
+    public Queue<Piece> getPieces() {
         return pieces;
     }
 
     public void addPawn(PieceColors color, int tile) {
-        Texture texture = new Texture("resources/" + color.get() + "_queen.png");
-        pieces.add(new Queen(new Vector2f(100.f, 100.f), texture, color, tile));
+        if (color == PieceColors.BLACK)
+            pieces.add(new Pawn(new Vector2f(100.f, 100.f), blackPawn, color, tile));
+        else
+            pieces.add(new Pawn(new Vector2f(100.f, 100.f), whitePawn, color, tile));
     }
 
     public void addKnight(PieceColors color, int tile) {
-        Texture texture = new Texture("resources/" + color.get() + "_knight.png");
+        Texture texture = new Texture("resources/" + color.get() + "_horse.png");
         pieces.add(new Knight(new Vector2f(100.f, 100.f), texture, color, tile));
     }
 

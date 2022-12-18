@@ -9,20 +9,21 @@ public class PiecePlacerFEN {
     public static void placePieces(String fen, PieceManager pieceManager) {
         int file = 0;
         int rank = 0;
-        int tile;
+        int tile = 0;
         PieceColors color;
 
-        for (char c : fen.toCharArray()) {
-            if (StringUtils.isNumeric(String.valueOf(c))) {
-                rank = c;
-            } else if (c == '/') {
-                file += 1;
-            } else if (Character.isUpperCase(c)) {
+        for (int i = 0; i < fen.length(); i++) {
+            if (StringUtils.isNumeric(String.valueOf(fen.charAt(i)))) {
+                file += Integer.parseInt(String.valueOf(fen.charAt(i)));
+            }
+            else if (fen.charAt(i) == '/') {
+                rank += 1;
+                file = 0;
+            } else if (Character.isUpperCase(fen.charAt(i))) {
                 color = PieceColors.WHITE;
-                tile = 7 * file + rank;
-                System.out.println(tile);
-                tile--;
-                switch (c) {
+                tile = 8 * file + rank;
+                if (tile > 63 || tile < 0) continue;
+                switch (fen.charAt(i)) {
                     case 'B' -> pieceManager.addBishop(color, tile);
                     case 'K' -> pieceManager.addKing(color, tile);
                     case 'P' -> pieceManager.addPawn(color, tile);
@@ -30,10 +31,14 @@ public class PiecePlacerFEN {
                     case 'Q' -> pieceManager.addQueen(color, tile);
                     case 'R' -> pieceManager.addRook(color, tile);
                 }
-            } else if (Character.isLowerCase(c)) {
+
+                file += 1;
+            }
+            else if (Character.isLowerCase(fen.charAt(i))) {
                 color = PieceColors.BLACK;
-                tile = 7 * file + rank;
-                switch (c) {
+                tile = 8 * file + rank;
+                if (tile > 63 || tile < 0) continue;
+                switch (fen.charAt(i)) {
                     case 'b' -> pieceManager.addBishop(color, tile);
                     case 'k' -> pieceManager.addKing(color, tile);
                     case 'p' -> pieceManager.addPawn(color, tile);
@@ -41,6 +46,7 @@ public class PiecePlacerFEN {
                     case 'q' -> pieceManager.addQueen(color, tile);
                     case 'r' -> pieceManager.addRook(color, tile);
                 }
+                file += 1;
             }
         }
     }
