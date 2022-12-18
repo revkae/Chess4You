@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-public abstract class Piece implements MoveCalculator, PreyCalculator {
+public abstract class Piece implements MoveCalculator {
 
     public PieceData data;
     public Queue<Integer> moves;
