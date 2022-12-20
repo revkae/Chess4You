@@ -25,7 +25,6 @@ public class BoardSelection {
                     if (quad.getColor().equals(Colors.BOARD_SELECTION.color)) {
                         unselectTile(i);
                     } else {
-                        System.out.println(i);
                         selectTile(i);
                     }
                 }

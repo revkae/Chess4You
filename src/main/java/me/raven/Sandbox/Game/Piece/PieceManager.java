@@ -6,20 +6,20 @@ import me.raven.Sandbox.Game.Board.PiecePlacerFEN;
 import me.raven.Sandbox.Game.Piece.Pieces.*;
 import org.joml.Vector2f;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class PieceManager {
-    private Queue<Piece> pieces = new ConcurrentLinkedQueue<>();
 
+    private static PieceManager instance;
+    private Queue<Piece> pieces = new ConcurrentLinkedQueue<>();
     private PieceColors turn = PieceColors.WHITE;
 
     Texture blackPawn = new Texture("resources/black_pawn.png");
     Texture whitePawn = new Texture("resources/white_pawn.png");
 
     public PieceManager() {
+        instance = this;
         PiecePlacerFEN.placePieces("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR", this);
     }
 
@@ -45,6 +45,10 @@ public class PieceManager {
 
     public Queue<Piece> getPieces() {
         return pieces;
+    }
+
+    public static PieceManager get() {
+        return instance;
     }
 
     public void addPawn(PieceColors color, int tile) {

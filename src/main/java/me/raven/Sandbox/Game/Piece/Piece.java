@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-public abstract class Piece implements MoveCalculator {
+public abstract class Piece {
 
     public PieceData data;
     public Queue<Integer> moves;
@@ -104,10 +104,18 @@ public abstract class Piece implements MoveCalculator {
         unselect();
     }
 
+    public void addMove(int move) {
+        this.moves.add(move);
+    }
+
     public void addMoves(List<Integer> moves) {
         if (moves == null) return;
 
         this.moves.addAll(moves);
+    }
+
+    public void addPrey(Piece prey) {
+        this.preys.add(prey);
     }
 
     public void addPreys(List<Piece> preys) {
@@ -130,8 +138,10 @@ public abstract class Piece implements MoveCalculator {
     private void select() {
         data.updateData(Colors.PIECE_SELECTION.color);
 
-        calculatePossibleMoves();
-        calculatePossiblePreys();
+        for (PieceDirections dir : PieceDirections.values()) {
+            calculatePossibleMoves(dir);
+            calculatePossiblePreys(dir);
+        }
 
         highlightPossibleMoves();
 
@@ -150,7 +160,6 @@ public abstract class Piece implements MoveCalculator {
 
     private void highlightPossibleMoves() {
         for (Integer move : moves) {
-            //System.out.println("move: " + move);
             GameManager.get().getBoardManager().getBoard().get(move).setColor(Colors.PIECE_SELECTION.color);
         }
         for (Piece prey : preys) {
@@ -176,7 +185,47 @@ public abstract class Piece implements MoveCalculator {
         return quad.getCollision().isInside(x, y);
     }
 
+    public void isEmpty(int nextTile) {
+        for (Piece temp : PieceManager.get().getPieces()) {
+            if (temp.data.tile != nextTile) {
+                if (moves.contains(nextTile)) return;
+                addMove(nextTile);
+                return;
+            }
+        }
+    }
+
+    public boolean hasAlly(int nextTile) {
+        for (Piece temp : PieceManager.get().getPieces()) {
+            if (temp.data.tile == nextTile && temp.data.color == data.color) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean hasEnemy(int nextTile) {
+        for (Piece temp : PieceManager.get().getPieces()) {
+            if (temp.data.tile == nextTile && temp.data.color != data.color) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isEnemy(int nextTile) {
+        for (Piece temp : PieceManager.get().getPieces()) {
+            if (temp.data.tile == nextTile && temp.data.color != data.color) {
+                if (preys.contains(temp)) return true;
+                addPrey(temp);
+                return true;
+            }
+        }
+        return false;
+    }
+
     protected abstract void specialMove();
-    protected abstract void calculatePossibleMoves();
-    protected abstract void calculatePossiblePreys();
+    protected abstract void checkLooker();
+    protected abstract void calculatePossibleMoves(PieceDirections dir);
+    protected abstract void calculatePossiblePreys(PieceDirections dir);
 }

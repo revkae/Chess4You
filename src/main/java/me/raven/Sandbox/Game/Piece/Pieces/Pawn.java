@@ -1,16 +1,15 @@
 package me.raven.Sandbox.Game.Piece.Pieces;
 
 import me.raven.Engine.Utils.Texture;
+import me.raven.Sandbox.Game.Board.BoardManager;
 import me.raven.Sandbox.Game.Piece.Piece;
 import me.raven.Sandbox.Game.Piece.PieceColors;
-import org.javatuples.Pair;
+import me.raven.Sandbox.Game.Piece.PieceDirections;
 import org.joml.Vector2f;
-
-import java.util.List;
 
 public class Pawn extends Piece {
 
-    private boolean isFirstMove = true;
+    public boolean isFirstMove = true;
 
     public Pawn(Vector2f scale, Texture texture, PieceColors color, int tile) {
         super(scale, texture, 1, color, tile);
@@ -26,19 +25,57 @@ public class Pawn extends Piece {
     }
 
     @Override
-    protected void calculatePossibleMoves() {
-        Pair<List<Integer>, List<Piece>> temp = generatePawnMoves(this.data.tile, this.data.color, isFirstMove);
-        try {
-            addMoves(temp.getValue0() == null ? null : temp.getValue0());
-            addPreys(temp.getValue1() == null ? null : temp.getValue1());
-        } catch (NullPointerException e) {
+    protected void checkLooker() {
 
+    }
+
+    private void calcEmptyMoves(PieceDirections dir) {
+        if (BoardManager.get().getTileCountToEdge(data.tile, dir) != 0) {
+            if (isFirstMove) {
+                int nextTile = data.tile + dir.getValue();
+                int nextTile2 = data.tile + 2 * dir.getValue();
+
+                if (!hasAlly(nextTile) && !hasEnemy(nextTile))
+                    isEmpty(nextTile);
+
+                if (!hasAlly(nextTile2) && !hasEnemy(nextTile2))
+                    isEmpty(nextTile2);
+            } else {
+                int nextTile = data.tile + dir.getValue();
+
+                if (!hasAlly(nextTile) && !hasEnemy(nextTile))
+                    isEmpty(nextTile);
+            }
+        }
+    }
+
+    private void calcEmptyPreys(PieceDirections dir) {
+        if (BoardManager.get().getTileCountToEdge(data.tile, dir) != 0) {
+            int nextTime = data.tile + dir.getValue();
+
+            if (hasAlly(nextTime)) return;
+            if (isEnemy(nextTime)) return;
         }
     }
 
     @Override
-    protected void calculatePossiblePreys() {
+    protected void calculatePossibleMoves(PieceDirections dir) {
+        if (data.color == PieceColors.WHITE)
+            calcEmptyMoves(PieceDirections.SOUTH);
+        else
+            calcEmptyMoves(PieceDirections.NORTH);
 
+    }
+
+    @Override
+    protected void calculatePossiblePreys(PieceDirections dir) {
+        if (data.color == PieceColors.WHITE) {
+            calcEmptyPreys(PieceDirections.SOUTH_EAST);
+            calcEmptyPreys(PieceDirections.SOUTH_WEST);
+        } else {
+            calcEmptyPreys(PieceDirections.NORTH_EAST);
+            calcEmptyPreys(PieceDirections.NORTH_WEST);
+        }
     }
 
 }

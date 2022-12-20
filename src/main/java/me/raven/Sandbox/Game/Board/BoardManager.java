@@ -3,6 +3,7 @@ package me.raven.Sandbox.Game.Board;
 import me.raven.Engine.Renderer.Renderer;
 import me.raven.Engine.Shapes.Quad;
 import me.raven.Engine.Utils.Texture;
+import me.raven.Sandbox.Game.Piece.PieceDirections;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -10,11 +11,14 @@ import java.util.*;
 
 public class BoardManager {
 
+    private static BoardManager instance;
     private BoardSelection boardSelection;
     private List<Quad> board = new ArrayList<>(64);
     private List<List<Integer>> tileNumsToEdge = new ArrayList<>(64);
 
     public BoardManager() {
+        this.instance = this;
+
         this.boardSelection = new BoardSelection();
         Texture whiteTexture = new Texture("resources/whitetile.jpg");
         Texture blackTexture = new Texture("resources/blacktile.jpg");
@@ -76,7 +80,11 @@ public class BoardManager {
         return board;
     }
 
-    public List<List<Integer>> getTileNumsToEdge() {
-        return tileNumsToEdge;
+    public int getTileCountToEdge(int tileNum, PieceDirections dir) {
+        return tileNumsToEdge.get(tileNum).get(dir.getDir());
+    }
+
+    public static BoardManager get() {
+        return instance;
     }
 }
