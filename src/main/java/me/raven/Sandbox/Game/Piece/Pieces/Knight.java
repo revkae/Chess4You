@@ -30,8 +30,7 @@ public class Knight extends Piece {
 
             if (hasEnemy(nextTile)) return;
             if (hasAlly(nextTile)) return;
-            System.out.println("check contro: " + PieceManager.get().isKingChecked(data.color));
-            if (PieceManager.get().isKingChecked(data.color) && PieceManager.get().canBlockByMove(nextTile, data.color)) {
+            if (PieceManager.get().isKingChecked(data.color)) {
                 isEmpty(nextTile);
             } else if (!PieceManager.get().isKingChecked(data.color)) {
                 isEmpty(nextTile);

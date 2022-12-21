@@ -37,7 +37,7 @@ public class Pawn extends Piece {
                 int nextTile2 = data.tile + 2 * dir.getValue();
 
                 if (!hasAlly(nextTile) && !hasEnemy(nextTile)) {
-                    if (PieceManager.get().isKingChecked(data.color) && PieceManager.get().canBlockByMove(nextTile, data.color)) {
+                    if (PieceManager.get().isKingChecked(data.color)) {
                         isEmpty(nextTile);
                         return;
                     } else if (!PieceManager.get().isKingChecked(data.color)) {
@@ -45,7 +45,7 @@ public class Pawn extends Piece {
                     }
                 }
                 if (!hasAlly(nextTile2) && !hasEnemy(nextTile2)) {
-                    if (PieceManager.get().isKingChecked(data.color) && PieceManager.get().canBlockByMove(nextTile, data.color)) {
+                    if (PieceManager.get().isKingChecked(data.color)) {
                         isEmpty(nextTile2);
                         return;
                     } else if (!PieceManager.get().isKingChecked(data.color)) {
@@ -56,7 +56,7 @@ public class Pawn extends Piece {
                 int nextTile = data.tile + dir.getValue();
 
                 if (!hasAlly(nextTile) && !hasEnemy(nextTile)) {
-                    if (PieceManager.get().isKingChecked(data.color) && PieceManager.get().canBlockByMove(nextTile, data.color)) {
+                    if (PieceManager.get().isKingChecked(data.color)) {
                         isEmpty(nextTile);
                         return;
                     } else if (!PieceManager.get().isKingChecked(data.color)) {

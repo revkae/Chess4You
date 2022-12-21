@@ -32,7 +32,7 @@ public class Rock extends Piece {
 
             if (hasAlly(nextTile)) return;
             if (hasEnemy(nextTile)) return;
-            if (PieceManager.get().isKingChecked(data.color) && PieceManager.get().canBlockByMove(nextTile, data.color)) {
+            if (PieceManager.get().isKingChecked(data.color)) {
                 isEmpty(nextTile);
                 return;
             } else if (!PieceManager.get().isKingChecked(data.color)) {

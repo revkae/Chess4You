@@ -91,28 +91,9 @@ public abstract class Piece {
 
     private void movePiece(Vector3f position, int tile) {
         data.updateData(position, tile);
-
         GameManager.get().getPieceManager().changeTurn(this);
-
         specialMove();
-
         unselect();
-
-        for (PieceDirections dir : PieceDirections.values()) {
-            calculatePossiblePreys(dir);
-        }
-        System.out.println("attack moves: " + attackMoves);
-
-        checkController();
-    }
-
-    private void checkController() {
-        if (PieceManager.get().isBlocked(data.color)) {
-            King king = PieceManager.get().getKingByColor(data.color);
-            king.setUnChecked();
-            System.out.println("isChecked: " + king.isChecked);
-            System.out.println(king.data.color);
-        }
     }
 
     private void movePieceAndEat(Piece prey, Vector3f position, int tile) {
@@ -144,13 +125,6 @@ public abstract class Piece {
         this.preys.addAll(preys);
     }
 
-    public void addAttackMove(int move) {
-        for (Piece prey : preys) {
-            if (PieceClass.isInstance(prey, PieceClass.KING)) return;
-        }
-        this.attackMoves.add(move);
-    }
-
     private void selection() {
         for (Piece piece : GameManager.get().getPieceManager().getPieces()) {
             if (piece == this) continue;
@@ -163,8 +137,6 @@ public abstract class Piece {
     }
 
     private void select() {
-        data.updateData(Colors.PIECE_SELECTION.color);
-
         clearAllMoves();
 
         for (PieceDirections dir : PieceDirections.values()) {
@@ -178,8 +150,6 @@ public abstract class Piece {
     }
 
     private void unselect() {
-        data.updateData(Colors.RESET.color);
-
         unHighlightPossibleMoves();
 
         clearAllMoves();
@@ -194,6 +164,8 @@ public abstract class Piece {
         for (Piece prey : preys) {
             GameManager.get().getBoardManager().getBoard().get(prey.data.tile).setColor(Colors.PIECE_SELECTION.color);
         }
+
+        data.updateData(Colors.PIECE_SELECTION.color);
     }
 
     private void unHighlightPossibleMoves() {
@@ -203,11 +175,19 @@ public abstract class Piece {
         for (Piece prey : preys) {
             GameManager.get().getBoardManager().getBoard().get(prey.data.tile).setColor(Colors.RESET.color);
         }
+        data.updateData(Colors.RESET.color);
     }
 
     private void clearAllMoves() {
         moves.clear();
         preys.clear();
+    }
+
+    public void addAttackMove(int nextTile) {
+        for (Piece prey : preys) {
+            if (PieceClass.isInstance(prey, PieceClass.KING)) return;
+        }
+        attackMoves.add(nextTile);
     }
 
     public void clearAttackMoves() {
@@ -260,6 +240,7 @@ public abstract class Piece {
                     King king = (King) temp;
                     king.setChecked(this);
                     attackMoves.remove(king.data.tile);
+                    System.out.println(attackMoves);
                 }
                 addPrey(temp);
                 return true;

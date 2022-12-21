@@ -44,6 +44,10 @@ public class PieceManager {
         turn = PieceColors.changeTurn(turn);
     }
 
+    private void calculateKingChecks(PieceColors color) {
+        King king = getKingByColor(color);
+    }
+
     public Queue<Piece> getPieces() {
         return pieces;
     }
@@ -76,33 +80,11 @@ public class PieceManager {
         return null;
     }
 
-    public boolean canBlockByMove(int nextTile, PieceColors color) {
-        for (Piece piece : piecesCheckedBy(color)) {
-            for (Integer move : piece.attackMoves) {
-                if (nextTile != move) continue;
-                return true;
-            }
-        }
-        return false;
-    }
-
     public boolean canBlockByPrey(int nextTile, PieceColors color) {
         for (Piece piece : piecesCheckedBy(color)) {
             if (piece.data.tile != nextTile) continue;
             System.out.println("block by prey");
             return true;
-        }
-        return false;
-    }
-
-    public boolean isBlocked(PieceColors color) {
-        for (Piece all : getPiecesByColor(color)) {
-            for (Piece piece : piecesCheckedBy(color)) {
-                for (Integer attackMove : piece.attackMoves) {
-                    if (all.data.tile != attackMove) continue;
-                    return true;
-                }
-            }
         }
         return false;
     }
