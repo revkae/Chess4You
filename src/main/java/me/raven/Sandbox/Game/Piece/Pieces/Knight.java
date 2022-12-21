@@ -2,10 +2,10 @@ package me.raven.Sandbox.Game.Piece.Pieces;
 
 import me.raven.Engine.Utils.Texture;
 import me.raven.Sandbox.Game.Board.BoardManager;
-import me.raven.Sandbox.Game.Piece.Piece;
-import me.raven.Sandbox.Game.Piece.PieceColors;
-import me.raven.Sandbox.Game.Piece.PieceDirections;
+import me.raven.Sandbox.Game.Piece.*;
 import org.joml.Vector2f;
+import org.lwjgl.openal.SOFTDeferredUpdates;
+import org.lwjgl.openal.SOFTOutputLimiter;
 
 public class Knight extends Piece {
 
@@ -26,14 +26,16 @@ public class Knight extends Piece {
     private void calcEmptyMoves(PieceDirections one, PieceDirections two) {
         if (BoardManager.get().getTileCountToEdge(this.data.tile, two) >= 2
                 && BoardManager.get().getTileCountToEdge(this.data.tile, one) >= 1) {
-            System.out.println("one: " + BoardManager.get().getTileCountToEdge(this.data.tile, one));
-            System.out.println("two: " + BoardManager.get().getTileCountToEdge(this.data.tile, two));
             int nextTile = data.tile + one.getValue() + two.getValue() * 2;
 
             if (hasEnemy(nextTile)) return;
             if (hasAlly(nextTile)) return;
-
-            isEmpty(nextTile);
+            System.out.println("check contro: " + PieceManager.get().isKingChecked(data.color));
+            if (PieceManager.get().isKingChecked(data.color) && PieceManager.get().canBlockByMove(nextTile, data.color)) {
+                isEmpty(nextTile);
+            } else if (!PieceManager.get().isKingChecked(data.color)) {
+                isEmpty(nextTile);
+            }
         }
     }
 
@@ -42,9 +44,15 @@ public class Knight extends Piece {
                 && BoardManager.get().getTileCountToEdge(this.data.tile, one) >= 1) {
             int nextTile = data.tile + one.getValue() + two.getValue() * 2;
 
+            addAttackMove(nextTile);
             if (hasAlly(nextTile)) return;
-            if (isEnemy(nextTile)) return;
+            if (PieceManager.get().isKingChecked(data.color) && PieceManager.get().canBlockByPrey(nextTile, data.color)) {
+                isEnemy(nextTile);
+            } else if (!PieceManager.get().isKingChecked(data.color)) {
+                isEnemy(nextTile);
+            }
         }
+        clearAttackMoves();
     }
 
     @Override

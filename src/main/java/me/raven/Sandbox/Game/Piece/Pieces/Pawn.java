@@ -5,6 +5,7 @@ import me.raven.Sandbox.Game.Board.BoardManager;
 import me.raven.Sandbox.Game.Piece.Piece;
 import me.raven.Sandbox.Game.Piece.PieceColors;
 import me.raven.Sandbox.Game.Piece.PieceDirections;
+import me.raven.Sandbox.Game.Piece.PieceManager;
 import org.joml.Vector2f;
 
 public class Pawn extends Piece {
@@ -35,27 +36,51 @@ public class Pawn extends Piece {
                 int nextTile = data.tile + dir.getValue();
                 int nextTile2 = data.tile + 2 * dir.getValue();
 
-                if (!hasAlly(nextTile) && !hasEnemy(nextTile))
-                    isEmpty(nextTile);
-
-                if (!hasAlly(nextTile2) && !hasEnemy(nextTile2))
-                    isEmpty(nextTile2);
+                if (!hasAlly(nextTile) && !hasEnemy(nextTile)) {
+                    if (PieceManager.get().isKingChecked(data.color) && PieceManager.get().canBlockByMove(nextTile, data.color)) {
+                        isEmpty(nextTile);
+                        return;
+                    } else if (!PieceManager.get().isKingChecked(data.color)) {
+                        isEmpty(nextTile);
+                    }
+                }
+                if (!hasAlly(nextTile2) && !hasEnemy(nextTile2)) {
+                    if (PieceManager.get().isKingChecked(data.color) && PieceManager.get().canBlockByMove(nextTile, data.color)) {
+                        isEmpty(nextTile2);
+                        return;
+                    } else if (!PieceManager.get().isKingChecked(data.color)) {
+                        isEmpty(nextTile2);
+                    }
+                }
             } else {
                 int nextTile = data.tile + dir.getValue();
 
-                if (!hasAlly(nextTile) && !hasEnemy(nextTile))
-                    isEmpty(nextTile);
+                if (!hasAlly(nextTile) && !hasEnemy(nextTile)) {
+                    if (PieceManager.get().isKingChecked(data.color) && PieceManager.get().canBlockByMove(nextTile, data.color)) {
+                        isEmpty(nextTile);
+                        return;
+                    } else if (!PieceManager.get().isKingChecked(data.color)) {
+                        isEmpty(nextTile);
+                    }
+                }
             }
         }
     }
 
     private void calcEmptyPreys(PieceDirections dir) {
         if (BoardManager.get().getTileCountToEdge(data.tile, dir) != 0) {
-            int nextTime = data.tile + dir.getValue();
+            int nextTile = data.tile + dir.getValue();
 
-            if (hasAlly(nextTime)) return;
-            if (isEnemy(nextTime)) return;
+            addAttackMove(nextTile);
+            if (hasAlly(nextTile)) return;
+            if (PieceManager.get().isKingChecked(data.color) && PieceManager.get().canBlockByPrey(nextTile, data.color)) {
+                isEnemy(nextTile);
+                return;
+            } else if (!PieceManager.get().isKingChecked(data.color)) {
+                isEnemy(nextTile);
+            }
         }
+        clearAttackMoves();
     }
 
     @Override

@@ -5,14 +5,17 @@ import me.raven.Sandbox.Game.Board.BoardManager;
 import me.raven.Sandbox.Game.Piece.Piece;
 import me.raven.Sandbox.Game.Piece.PieceColors;
 import me.raven.Sandbox.Game.Piece.PieceDirections;
+import me.raven.Sandbox.Managers.GameManager;
 import org.joml.Vector2f;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class King extends Piece {
 
-    public List<Piece> checkedBy = new ArrayList<>();
+    public Queue<Piece> checkedBy = new ConcurrentLinkedQueue<>();
     public boolean isChecked = false;
 
     public King(Vector2f scale, Texture texture, PieceColors pieceColor, int tile) {
@@ -29,14 +32,35 @@ public class King extends Piece {
 
     }
 
+    public void setChecked(Piece piece) {
+        System.out.println("CHECKED");
+        checkedBy.add(piece);
+        isChecked = true;
+    }
+
+    public void setUnChecked() {
+        System.out.println("UNCHECKED");
+        checkedBy.clear();
+        isChecked = false;
+    }
+
+    private boolean isPieceLooking(int nextTile) {
+        for (Piece piece : GameManager.get().getPieceManager().getPieces()) {
+            if (piece.moves.contains(nextTile)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     protected void calculatePossibleMoves(PieceDirections dir) {
         if (BoardManager.get().getTileCountToEdge(data.tile, dir) >= 1) {
             int nextTile = data.tile + dir.getValue();
-            System.out.println(nextTile);
 
             if (hasEnemy(nextTile)) return;
             if (hasAlly(nextTile)) return;
+            if (isPieceLooking(nextTile)) return;
 
             isEmpty(nextTile);
         }
@@ -48,7 +72,7 @@ public class King extends Piece {
             int nextTile = data.tile + dir.getValue();
 
             if (hasAlly(nextTile)) return;
-            if (isEnemy(nextTile)) return;
+            isEnemy(nextTile);
         }
     }
 }

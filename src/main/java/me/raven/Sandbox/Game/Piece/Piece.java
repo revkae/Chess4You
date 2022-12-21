@@ -5,6 +5,8 @@ import me.raven.Engine.Renderer.Renderer;
 import me.raven.Engine.Shapes.Quad;
 import me.raven.Engine.Utils.Texture;
 import me.raven.Sandbox.Game.Colors;
+import me.raven.Sandbox.Game.Piece.Pieces.King;
+import me.raven.Sandbox.Game.Piece.Pieces.Queen;
 import me.raven.Sandbox.Managers.GameManager;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -20,6 +22,7 @@ public abstract class Piece {
 
     public PieceData data;
     public Queue<Integer> moves;
+    public Queue<Integer> attackMoves;
     public List<Piece> preys;
 
     public boolean isSelected = false;
@@ -29,6 +32,7 @@ public abstract class Piece {
 
     public Piece(Vector2f scale, Texture texture, int value, PieceColors color, int tile) {
         this.moves = new ConcurrentLinkedQueue<>();
+        this.attackMoves = new ConcurrentLinkedQueue<>();
         this.preys = new ArrayList<>();
         this.data = new PieceData(
                 new Quad(GameManager.get().getBoardManager().getBoard().get(tile).getTransform().position, scale, texture),
@@ -88,18 +92,34 @@ public abstract class Piece {
     private void movePiece(Vector3f position, int tile) {
         data.updateData(position, tile);
 
-        GameManager.get().getPieceManager().changeTurn();
+        GameManager.get().getPieceManager().changeTurn(this);
 
         specialMove();
 
         unselect();
+
+        for (PieceDirections dir : PieceDirections.values()) {
+            calculatePossiblePreys(dir);
+        }
+        System.out.println("attack moves: " + attackMoves);
+
+        checkController();
+    }
+
+    private void checkController() {
+        if (PieceManager.get().isBlocked(data.color)) {
+            King king = PieceManager.get().getKingByColor(data.color);
+            king.setUnChecked();
+            System.out.println("isChecked: " + king.isChecked);
+            System.out.println(king.data.color);
+        }
     }
 
     private void movePieceAndEat(Piece prey, Vector3f position, int tile) {
         data.updateData(position, tile);
 
         GameManager.get().getPieceManager().removePiece(prey);
-        GameManager.get().getPieceManager().changeTurn();
+        GameManager.get().getPieceManager().changeTurn(this);
 
         unselect();
     }
@@ -124,6 +144,13 @@ public abstract class Piece {
         this.preys.addAll(preys);
     }
 
+    public void addAttackMove(int move) {
+        for (Piece prey : preys) {
+            if (PieceClass.isInstance(prey, PieceClass.KING)) return;
+        }
+        this.attackMoves.add(move);
+    }
+
     private void selection() {
         for (Piece piece : GameManager.get().getPieceManager().getPieces()) {
             if (piece == this) continue;
@@ -137,6 +164,8 @@ public abstract class Piece {
 
     private void select() {
         data.updateData(Colors.PIECE_SELECTION.color);
+
+        clearAllMoves();
 
         for (PieceDirections dir : PieceDirections.values()) {
             calculatePossibleMoves(dir);
@@ -181,6 +210,13 @@ public abstract class Piece {
         preys.clear();
     }
 
+    public void clearAttackMoves() {
+        for (Piece prey : preys) {
+            if (PieceClass.isInstance(prey, PieceClass.KING)) return;
+        }
+        attackMoves.clear();
+    }
+
     private boolean isInside(Quad quad, float x, float y) {
         return quad.getCollision().isInside(x, y);
     }
@@ -217,12 +253,21 @@ public abstract class Piece {
         for (Piece temp : PieceManager.get().getPieces()) {
             if (temp.data.tile == nextTile && temp.data.color != data.color) {
                 if (preys.contains(temp)) return true;
+
+                if (!PieceClass.isInstance(temp, PieceClass.KING)) {
+                    clearAttackMoves();
+                } else {
+                    King king = (King) temp;
+                    king.setChecked(this);
+                    attackMoves.remove(king.data.tile);
+                }
                 addPrey(temp);
                 return true;
             }
         }
         return false;
     }
+
 
     protected abstract void specialMove();
     protected abstract void checkLooker();

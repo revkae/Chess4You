@@ -6,6 +6,7 @@ import me.raven.Sandbox.Game.Board.PiecePlacerFEN;
 import me.raven.Sandbox.Game.Piece.Pieces.*;
 import org.joml.Vector2f;
 
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -39,12 +40,78 @@ public class PieceManager {
         pieces.remove(piece);
     }
 
-    public void changeTurn() {
+    public void changeTurn(Piece piecePar) {
         turn = PieceColors.changeTurn(turn);
     }
 
     public Queue<Piece> getPieces() {
         return pieces;
+    }
+
+    public Queue<Piece> getPiecesByColor(PieceColors color) {
+        Queue<Piece> temp = new ConcurrentLinkedQueue<>();
+        for (Piece piece : pieces) {
+            if (piece.data.color == color) temp.add(piece);
+        }
+        return temp;
+    }
+
+    public boolean isKingChecked(PieceColors color) {
+        for (Piece piece : pieces) {
+            if (PieceClass.isInstance(piece, PieceClass.KING) && piece.data.color == color) {
+                King king = (King) piece;
+                return king.isChecked;
+            }
+        }
+        return false;
+    }
+
+    public Queue<Piece> piecesCheckedBy(PieceColors color) {
+        for (Piece piece : pieces) {
+            if (PieceClass.isInstance(piece, PieceClass.KING) && piece.data.color == color) {
+                King king = (King) piece;
+                return king.checkedBy;
+            }
+        }
+        return null;
+    }
+
+    public boolean canBlockByMove(int nextTile, PieceColors color) {
+        for (Piece piece : piecesCheckedBy(color)) {
+            for (Integer move : piece.attackMoves) {
+                if (nextTile != move) continue;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean canBlockByPrey(int nextTile, PieceColors color) {
+        for (Piece piece : piecesCheckedBy(color)) {
+            if (piece.data.tile != nextTile) continue;
+            System.out.println("block by prey");
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isBlocked(PieceColors color) {
+        for (Piece all : getPiecesByColor(color)) {
+            for (Piece piece : piecesCheckedBy(color)) {
+                for (Integer attackMove : piece.attackMoves) {
+                    if (all.data.tile != attackMove) continue;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public King getKingByColor(PieceColors color) {
+        for (Piece piece : getPiecesByColor(color)) {
+            if (PieceClass.isInstance(piece, PieceClass.KING)) return (King) piece;
+        }
+        return null;
     }
 
     public static PieceManager get() {
