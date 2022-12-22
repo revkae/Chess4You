@@ -5,7 +5,7 @@ import me.raven.Sandbox.Game.Board.BoardManager;
 import me.raven.Sandbox.Game.Piece.Piece;
 import me.raven.Sandbox.Game.Piece.PieceColors;
 import me.raven.Sandbox.Game.Piece.PieceDirections;
-import me.raven.Sandbox.Managers.GameManager;
+import me.raven.Sandbox.Game.Piece.PieceManager;
 import org.joml.Vector2f;
 
 import java.util.Queue;
@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class King extends Piece {
 
+    public Queue<Integer> blockedMoves = new ConcurrentLinkedQueue<>();
     public Queue<Piece> checkedBy = new ConcurrentLinkedQueue<>();
     public boolean isChecked = false;
 
@@ -26,51 +27,25 @@ public class King extends Piece {
     }
 
     @Override
-    protected void checkLooker() {
+    public void calculatePossibleMoves(PieceDirections dir) {
+        if (BoardManager.get().getTileCountToEdge(tempTile, dir) >= 1) {
+            int nextTile = tempTile + dir.getValue();
 
-    }
+            if (PieceManager.get().hasEnemy(this, nextTile)) return;
+            if (PieceManager.get().hasAlly(this, nextTile)) return;
 
-    public void setChecked(Piece piece) {
-        System.out.println("CHECKED");
-        checkedBy.add(piece);
-        isChecked = true;
-    }
-
-    public void setUnChecked() {
-        System.out.println("UNCHECKED");
-        checkedBy.clear();
-        isChecked = false;
-    }
-
-    private boolean isPieceLooking(int nextTile) {
-        for (Piece piece : GameManager.get().getPieceManager().getPieces()) {
-            if (piece.moves.contains(nextTile)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    protected void calculatePossibleMoves(PieceDirections dir) {
-        if (BoardManager.get().getTileCountToEdge(data.tile, dir) >= 1) {
-            int nextTile = data.tile + dir.getValue();
-
-            if (hasEnemy(nextTile)) return;
-            if (hasAlly(nextTile)) return;
-            if (isPieceLooking(nextTile)) return;
-
-            isEmpty(nextTile);
+            PieceManager.get().isEmpty(this, nextTile);
         }
     }
 
     @Override
     protected void calculatePossiblePreys(PieceDirections dir) {
-        if (BoardManager.get().getTileCountToEdge(data.tile, dir) >= 1) {
-            int nextTile = data.tile + dir.getValue();
+        if (BoardManager.get().getTileCountToEdge(tempTile, dir) >= 1) {
+            int nextTile = tempTile + dir.getValue();
 
-            if (hasAlly(nextTile)) return;
-            isEnemy(nextTile);
+            if (PieceManager.get().hasAlly(this, nextTile)) return;
+
+            PieceManager.get().isEnemy(this, nextTile);
         }
     }
 }

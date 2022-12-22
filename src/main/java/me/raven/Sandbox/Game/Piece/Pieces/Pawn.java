@@ -18,50 +18,27 @@ public class Pawn extends Piece {
 
     @Override
     public void specialMove() {
-        /*
-        @ called every move
-         */
         if (isFirstMove)
             isFirstMove = false;
     }
 
-    @Override
-    protected void checkLooker() {
-
-    }
-
     private void calcEmptyMoves(PieceDirections dir) {
-        if (BoardManager.get().getTileCountToEdge(data.tile, dir) != 0) {
+        if (BoardManager.get().getTileCountToEdge(tempTile, dir) != 0) {
             if (isFirstMove) {
-                int nextTile = data.tile + dir.getValue();
-                int nextTile2 = data.tile + 2 * dir.getValue();
+                int nextTile = tempTile + dir.getValue();
+                int nextTile2 = tempTile + 2 * dir.getValue();
 
-                if (!hasAlly(nextTile) && !hasEnemy(nextTile)) {
-                    if (PieceManager.get().isKingChecked(data.color)) {
-                        isEmpty(nextTile);
-                        return;
-                    } else if (!PieceManager.get().isKingChecked(data.color)) {
-                        isEmpty(nextTile);
-                    }
+                if (!PieceManager.get().hasAlly(this, nextTile) && !PieceManager.get().hasEnemy(this, nextTile)) {
+                    PieceManager.get().isEmpty(this, nextTile);
                 }
-                if (!hasAlly(nextTile2) && !hasEnemy(nextTile2)) {
-                    if (PieceManager.get().isKingChecked(data.color)) {
-                        isEmpty(nextTile2);
-                        return;
-                    } else if (!PieceManager.get().isKingChecked(data.color)) {
-                        isEmpty(nextTile2);
-                    }
+                if (!PieceManager.get().hasAlly(this, nextTile2) && !PieceManager.get().hasEnemy(this, nextTile2)) {
+                    PieceManager.get().isEmpty(this, nextTile2);
                 }
             } else {
-                int nextTile = data.tile + dir.getValue();
+                int nextTile = tempTile + dir.getValue();
 
-                if (!hasAlly(nextTile) && !hasEnemy(nextTile)) {
-                    if (PieceManager.get().isKingChecked(data.color)) {
-                        isEmpty(nextTile);
-                        return;
-                    } else if (!PieceManager.get().isKingChecked(data.color)) {
-                        isEmpty(nextTile);
-                    }
+                if (!PieceManager.get().hasAlly(this, nextTile) && !PieceManager.get().hasEnemy(this, nextTile)) {
+                    PieceManager.get().isEmpty(this, nextTile);
                 }
             }
         }
@@ -71,20 +48,13 @@ public class Pawn extends Piece {
         if (BoardManager.get().getTileCountToEdge(data.tile, dir) != 0) {
             int nextTile = data.tile + dir.getValue();
 
-            addAttackMove(nextTile);
-            if (hasAlly(nextTile)) return;
-            if (PieceManager.get().isKingChecked(data.color) && PieceManager.get().canBlockByPrey(nextTile, data.color)) {
-                isEnemy(nextTile);
-                return;
-            } else if (!PieceManager.get().isKingChecked(data.color)) {
-                isEnemy(nextTile);
-            }
+            if (PieceManager.get().hasAlly(this, nextTile)) return;
+            PieceManager.get().isEnemy(this, nextTile);
         }
-        clearAttackMoves();
     }
 
     @Override
-    protected void calculatePossibleMoves(PieceDirections dir) {
+    public void calculatePossibleMoves(PieceDirections dir) {
         if (data.color == PieceColors.WHITE)
             calcEmptyMoves(PieceDirections.SOUTH);
         else

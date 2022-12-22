@@ -4,8 +4,6 @@ import me.raven.Engine.Utils.Texture;
 import me.raven.Sandbox.Game.Board.BoardManager;
 import me.raven.Sandbox.Game.Piece.*;
 import org.joml.Vector2f;
-import org.lwjgl.openal.SOFTDeferredUpdates;
-import org.lwjgl.openal.SOFTOutputLimiter;
 
 public class Knight extends Piece {
 
@@ -18,44 +16,29 @@ public class Knight extends Piece {
 
     }
 
-    @Override
-    protected void checkLooker() {
-
-    }
-
     private void calcEmptyMoves(PieceDirections one, PieceDirections two) {
-        if (BoardManager.get().getTileCountToEdge(this.data.tile, two) >= 2
-                && BoardManager.get().getTileCountToEdge(this.data.tile, one) >= 1) {
-            int nextTile = data.tile + one.getValue() + two.getValue() * 2;
+        if (BoardManager.get().getTileCountToEdge(this.tempTile, two) >= 2
+                && BoardManager.get().getTileCountToEdge(this.tempTile, one) >= 1) {
+            int nextTile = tempTile + one.getValue() + two.getValue() * 2;
 
-            if (hasEnemy(nextTile)) return;
-            if (hasAlly(nextTile)) return;
-            if (PieceManager.get().isKingChecked(data.color)) {
-                isEmpty(nextTile);
-            } else if (!PieceManager.get().isKingChecked(data.color)) {
-                isEmpty(nextTile);
-            }
+            if (PieceManager.get().hasEnemy(this, nextTile)) return;
+            if (PieceManager.get().hasAlly(this, nextTile)) return;
+            PieceManager.get().isEmpty(this, nextTile);
         }
     }
 
     private void calcEmptyPreys(PieceDirections one, PieceDirections two) {
-        if (BoardManager.get().getTileCountToEdge(this.data.tile, two) >= 2
-                && BoardManager.get().getTileCountToEdge(this.data.tile, one) >= 1) {
-            int nextTile = data.tile + one.getValue() + two.getValue() * 2;
+        if (BoardManager.get().getTileCountToEdge(this.tempTile, two) >= 2
+                && BoardManager.get().getTileCountToEdge(this.tempTile, one) >= 1) {
+            int nextTile = tempTile + one.getValue() + two.getValue() * 2;
 
-            addAttackMove(nextTile);
-            if (hasAlly(nextTile)) return;
-            if (PieceManager.get().isKingChecked(data.color) && PieceManager.get().canBlockByPrey(nextTile, data.color)) {
-                isEnemy(nextTile);
-            } else if (!PieceManager.get().isKingChecked(data.color)) {
-                isEnemy(nextTile);
-            }
+            if (PieceManager.get().hasAlly(this, nextTile)) return;
+            PieceManager.get().isEnemy(this, nextTile);
         }
-        clearAttackMoves();
     }
 
     @Override
-    protected void calculatePossibleMoves(PieceDirections dir) {
+    public void calculatePossibleMoves(PieceDirections dir) {
         calcEmptyMoves(PieceDirections.EAST, PieceDirections.NORTH);
         calcEmptyMoves(PieceDirections.WEST, PieceDirections.NORTH);
         calcEmptyMoves(PieceDirections.SOUTH, PieceDirections.WEST);

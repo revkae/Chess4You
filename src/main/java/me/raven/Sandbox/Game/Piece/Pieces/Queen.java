@@ -19,40 +19,23 @@ public class Queen extends Piece {
     }
 
     @Override
-    protected void checkLooker() {
+    public void calculatePossibleMoves(PieceDirections dir) {
+        for (int i = 1; i < BoardManager.get().getTileCountToEdge(tempTile, dir) + 1; i++) {
+            int nextTile = tempTile + i * dir.getValue();
 
-    }
-
-    @Override
-    protected void calculatePossibleMoves(PieceDirections dir) {
-        for (int i = 1; i < BoardManager.get().getTileCountToEdge(data.tile, dir) + 1; i++) {
-            int nextTile = data.tile + i * dir.getValue();
-
-            if (hasAlly(nextTile)) return;
-            if (hasEnemy(nextTile)) return;
-            if (PieceManager.get().isKingChecked(data.color)) {
-                isEmpty(nextTile);
-                return;
-            } else if (!PieceManager.get().isKingChecked(data.color)) {
-                isEmpty(nextTile);
-            }
+            if (PieceManager.get().hasAlly(this, nextTile)) return;
+            if (PieceManager.get().hasEnemy(this, nextTile)) return;
+            PieceManager.get().isEmpty(this, nextTile);
         }
     }
 
     @Override
     protected void calculatePossiblePreys(PieceDirections dir) {
-        for (int i = 1; i < BoardManager.get().getTileCountToEdge(data.tile, dir) + 1; i++) {
-            int nextTile = data.tile + i * dir.getValue();
+        for (int i = 1; i < BoardManager.get().getTileCountToEdge(tempTile, dir) + 1; i++) {
+            int nextTile = tempTile + i * dir.getValue();
 
-            addAttackMove(nextTile);
-            if (hasAlly(nextTile)) return;
-            if (PieceManager.get().isKingChecked(data.color) && PieceManager.get().canBlockByPrey(nextTile, data.color)) {
-                isEnemy(nextTile);
-                return;
-            } else if (!PieceManager.get().isKingChecked(data.color)) {
-                isEnemy(nextTile);
-            }
+            if (PieceManager.get().hasAlly(this, nextTile)) return;
+            if (PieceManager.get().isEnemy(this, nextTile)) return;
         }
-        clearAttackMoves();
     }
 }

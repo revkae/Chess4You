@@ -6,7 +6,6 @@ import me.raven.Engine.Shapes.Quad;
 import me.raven.Engine.Utils.Texture;
 import me.raven.Sandbox.Game.Colors;
 import me.raven.Sandbox.Game.Piece.Pieces.King;
-import me.raven.Sandbox.Game.Piece.Pieces.Queen;
 import me.raven.Sandbox.Managers.GameManager;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -22,8 +21,10 @@ public abstract class Piece {
 
     public PieceData data;
     public Queue<Integer> moves;
-    public Queue<Integer> attackMoves;
-    public List<Piece> preys;
+    public Queue<Integer> movableTiles;
+    public Queue<Piece> preys;
+
+    public int tempTile;
 
     public boolean isSelected = false;
     public boolean isMovePressed = false;
@@ -32,13 +33,14 @@ public abstract class Piece {
 
     public Piece(Vector2f scale, Texture texture, int value, PieceColors color, int tile) {
         this.moves = new ConcurrentLinkedQueue<>();
-        this.attackMoves = new ConcurrentLinkedQueue<>();
-        this.preys = new ArrayList<>();
+        this.movableTiles = new ConcurrentLinkedQueue<>();
+        this.preys = new ConcurrentLinkedQueue<>();
         this.data = new PieceData(
                 new Quad(GameManager.get().getBoardManager().getBoard().get(tile).getTransform().position, scale, texture),
                 tile,
                 value,
                 color);
+        this.tempTile = tile;
     }
 
     public void onRender(Renderer renderer) {
@@ -89,40 +91,45 @@ public abstract class Piece {
         }
     }
 
+    public void tryMove(int nextTile) {
+        tempTile = nextTile;
+    }
+
+    public void invertMove() {
+        tempTile = data.tile;
+    }
+
     private void movePiece(Vector3f position, int tile) {
+        King king = PieceManager.get().getKingByColor(data.color);
         data.updateData(position, tile);
-        GameManager.get().getPieceManager().changeTurn(this);
+        tempTile = data.tile;
+        GameManager.get().getPieceManager().changeTurn();
+        king.isChecked = false;
+        king.checkedBy.clear();
         specialMove();
         unselect();
     }
 
     private void movePieceAndEat(Piece prey, Vector3f position, int tile) {
+        King king = PieceManager.get().getKingByColor(data.color);
         data.updateData(position, tile);
+        tempTile = data.tile;
 
         GameManager.get().getPieceManager().removePiece(prey);
-        GameManager.get().getPieceManager().changeTurn(this);
+        GameManager.get().getPieceManager().changeTurn();
+        king.isChecked = false;
+        king.checkedBy.clear();
 
         unselect();
     }
 
     public void addMove(int move) {
         this.moves.add(move);
-    }
-
-    public void addMoves(List<Integer> moves) {
-        if (moves == null) return;
-
-        this.moves.addAll(moves);
+        this.movableTiles.add(move);
     }
 
     public void addPrey(Piece prey) {
         this.preys.add(prey);
-    }
-
-    public void addPreys(List<Piece> preys) {
-        if (preys == null) return;
-
-        this.preys.addAll(preys);
     }
 
     private void selection() {
@@ -143,6 +150,7 @@ public abstract class Piece {
             calculatePossibleMoves(dir);
             calculatePossiblePreys(dir);
         }
+        legalMoveControl();
 
         highlightPossibleMoves();
 
@@ -183,75 +191,78 @@ public abstract class Piece {
         preys.clear();
     }
 
-    public void addAttackMove(int nextTile) {
-        for (Piece prey : preys) {
-            if (PieceClass.isInstance(prey, PieceClass.KING)) return;
-        }
-        attackMoves.add(nextTile);
-    }
-
-    public void clearAttackMoves() {
-        for (Piece prey : preys) {
-            if (PieceClass.isInstance(prey, PieceClass.KING)) return;
-        }
-        attackMoves.clear();
-    }
-
     private boolean isInside(Quad quad, float x, float y) {
         return quad.getCollision().isInside(x, y);
     }
 
-    public void isEmpty(int nextTile) {
-        for (Piece temp : PieceManager.get().getPieces()) {
-            if (temp.data.tile != nextTile) {
-                if (moves.contains(nextTile)) return;
-                addMove(nextTile);
-                return;
-            }
-        }
-    }
+    private void legalMoveControl() {
+        King king = PieceManager.get().getKingByColor(data.color);
 
-    public boolean hasAlly(int nextTile) {
-        for (Piece temp : PieceManager.get().getPieces()) {
-            if (temp.data.tile == nextTile && temp.data.color == data.color) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean hasEnemy(int nextTile) {
-        for (Piece temp : PieceManager.get().getPieces()) {
-            if (temp.data.tile == nextTile && temp.data.color != data.color) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean isEnemy(int nextTile) {
-        for (Piece temp : PieceManager.get().getPieces()) {
-            if (temp.data.tile == nextTile && temp.data.color != data.color) {
-                if (preys.contains(temp)) return true;
-
-                if (!PieceClass.isInstance(temp, PieceClass.KING)) {
-                    clearAttackMoves();
-                } else {
-                    King king = (King) temp;
-                    king.setChecked(this);
-                    attackMoves.remove(king.data.tile);
-                    System.out.println(attackMoves);
+        if (king.isChecked) {
+            for (Piece piece : PieceManager.get().getPiecesByColor(data.color)) {
+                for (PieceDirections dir : PieceDirections.values()) {
+                    piece.calculatePossibleMoves(dir);
                 }
-                addPrey(temp);
-                return true;
+                for (Integer move : piece.moves) {
+                    piece.tryMove(move);
+                    for (Piece checked : king.checkedBy) {
+                        for (PieceDirections dir : PieceDirections.values()) {
+                            checked.calculatePossiblePreys(dir);
+                        }
+                        if (checked.preys.contains(king)) {
+                            piece.moves.remove(move);
+                        }
+                        checked.preys.clear();
+                    }
+                    for (Piece checked : PieceManager.get().getPiecesByColor(PieceColors.getOpposite(data.color))) {
+                        for (PieceDirections dir : PieceDirections.values()) {
+                            checked.calculatePossiblePreys(dir);
+                        }
+                        if (checked.preys.contains(king)) {
+                            piece.moves.remove(move);
+                        }
+                        checked.preys.clear();
+                    }
+                    piece.movableTiles = piece.moves;
+                    piece.invertMove();
+                }
+            }
+            for (Piece piece : PieceManager.get().getPiecesByColor(data.color)) {
+                for (PieceDirections dir : PieceDirections.values()) {
+                    piece.calculatePossiblePreys(dir);
+                }
+                for (Piece prey : piece.preys) {
+                    for (Piece checked : king.checkedBy) {
+                        if (!checked.equals(prey)) {
+                            preys.remove(prey);
+                        }
+                    }
+                }
+            }
+        } else {
+            for (Piece piece : PieceManager.get().getPiecesByColor(data.color)) {
+                for (PieceDirections dir : PieceDirections.values()) {
+                    piece.calculatePossibleMoves(dir);
+                }
+                for (Integer move : piece.moves) {
+                    piece.tryMove(move);
+                    for (Piece opposite : PieceManager.get().getPiecesByColor(PieceColors.getOpposite(data.color))) {
+                        for (PieceDirections dir : PieceDirections.values()) {
+                            opposite.calculatePossiblePreys(dir);
+                        }
+                        if (opposite.preys.contains(king)) {
+                            piece.moves.remove(move);
+                        }
+                        opposite.preys.clear();
+                    }
+                    piece.movableTiles = piece.moves;
+                    piece.invertMove();
+                }
             }
         }
-        return false;
     }
-
 
     protected abstract void specialMove();
-    protected abstract void checkLooker();
-    protected abstract void calculatePossibleMoves(PieceDirections dir);
+    public abstract void calculatePossibleMoves(PieceDirections dir);
     protected abstract void calculatePossiblePreys(PieceDirections dir);
 }

@@ -16,25 +16,15 @@ public class Bishop extends Piece {
     }
 
     @Override
-    protected void checkLooker() {
-
-    }
-
-    @Override
-    protected void calculatePossibleMoves(PieceDirections dir) {
+    public void calculatePossibleMoves(PieceDirections dir) {
         if (!dir.isDiagonal()) return;
 
-        for (int i = 1; i < BoardManager.get().getTileCountToEdge(data.tile, dir) + 1; i++) {
-            int nextTile = data.tile + i * dir.getValue();
+        for (int i = 1; i < BoardManager.get().getTileCountToEdge(tempTile, dir) + 1; i++) {
+            int nextTile = tempTile + i * dir.getValue();
 
-            if (hasAlly(nextTile)) return;
-            if (hasEnemy(nextTile)) return;
-            if (PieceManager.get().isKingChecked(data.color)) {
-                isEmpty(nextTile);
-                return;
-            } else if (!PieceManager.get().isKingChecked(data.color)) {
-                isEmpty(nextTile);
-            }
+            if (PieceManager.get().hasAlly(this, nextTile)) return;
+            if (PieceManager.get().hasEnemy(this, nextTile)) return;
+            PieceManager.get().isEmpty(this, nextTile);
         }
     }
 
@@ -42,18 +32,11 @@ public class Bishop extends Piece {
     protected void calculatePossiblePreys(PieceDirections dir) {
         if (!dir.isDiagonal()) return;
 
-        for (int i = 1; i < BoardManager.get().getTileCountToEdge(data.tile, dir) + 1; i++) {
-            int nextTile = data.tile + i * dir.getValue();
+        for (int i = 1; i < BoardManager.get().getTileCountToEdge(tempTile, dir) + 1; i++) {
+            int nextTile = tempTile + i * dir.getValue();
 
-            addAttackMove(nextTile);
-            if (hasAlly(nextTile)) return;
-            if (PieceManager.get().isKingChecked(data.color) && PieceManager.get().canBlockByPrey(nextTile, data.color)) {
-                isEnemy(nextTile);
-                return;
-            } else if (!PieceManager.get().isKingChecked(data.color)) {
-                isEnemy(nextTile);
-            }
+            if (PieceManager.get().hasAlly(this, nextTile)) return;
+            if (PieceManager.get().isEnemy(this, nextTile)) return;
         }
-        clearAttackMoves();
     }
 }
