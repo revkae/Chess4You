@@ -6,6 +6,8 @@ import me.raven.Sandbox.Game.Board.PiecePlacerFEN;
 import me.raven.Sandbox.Game.Piece.Pieces.*;
 import org.joml.Vector2f;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -20,7 +22,7 @@ public class PieceManager {
 
     public PieceManager() {
         instance = this;
-        PiecePlacerFEN.placePieces("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR", this);
+        PiecePlacerFEN.placePieces("rnbqkbnr/pppppppp/7p/8/8/8/PPPPPPPP/RNBQKBNR", this);
     }
 
     public void onUpdate() {
@@ -77,6 +79,15 @@ public class PieceManager {
             if (PieceClass.isInstance(piece, PieceClass.KING)) return (King) piece;
         }
         return null;
+    }
+
+    public List<Rock> getRookByColor(PieceColors color) {
+        List<Rock> rocks = new ArrayList<>();
+        for (Piece piece : getPiecesByColor(color)) {
+            if (PieceClass.isInstance(piece, PieceClass.ROOK))
+                rocks.add((Rock) piece);
+        }
+        return rocks;
     }
 
     public void isEmpty(Piece piece, int nextTile) {

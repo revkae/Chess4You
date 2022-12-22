@@ -14,7 +14,7 @@ public class Queen extends Piece {
     }
 
     @Override
-    public void specialMove() {
+    public void specialMove(int nextTile) {
 
     }
 

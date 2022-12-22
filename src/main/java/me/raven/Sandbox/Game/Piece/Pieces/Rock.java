@@ -9,13 +9,23 @@ import me.raven.Sandbox.Game.Piece.PieceManager;
 import org.joml.Vector2f;
 
 public class Rock extends Piece {
+
+    public boolean isFirstMove = true;
+
     public Rock(Vector2f scale, Texture texture, PieceColors pieceColor, int tile) {
         super(scale, texture, 5, pieceColor, tile);
+
+        if (data.color == PieceColors.BLACK && tile != 56 && tile != 0) {
+            isFirstMove = false;
+        } else if (data.color == PieceColors.WHITE && tile != 7 && tile != 63) {
+            isFirstMove = false;
+        }
     }
 
     @Override
-    public void specialMove() {
-
+    public void specialMove(int nextTile) {
+        if (isFirstMove)
+            isFirstMove = false;
     }
 
     @Override

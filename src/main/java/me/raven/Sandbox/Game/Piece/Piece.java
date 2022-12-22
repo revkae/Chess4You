@@ -102,7 +102,7 @@ public abstract class Piece {
         GameManager.get().getPieceManager().changeTurn();
         king.isChecked = false;
         king.checkedBy.clear();
-        specialMove();
+        specialMove(tempTile);
         unselect();
     }
 
@@ -115,14 +115,17 @@ public abstract class Piece {
         GameManager.get().getPieceManager().changeTurn();
         king.isChecked = false;
         king.checkedBy.clear();
+        specialMove(tempTile);
         unselect();
     }
 
     public void addMove(int move) {
+        if (moves.contains(move)) return;
         this.moves.add(move);
     }
 
     public void addPrey(Piece prey) {
+        if (preys.contains(prey)) return;
         this.preys.add(prey);
     }
 
@@ -289,7 +292,7 @@ public abstract class Piece {
         }
     }
 
-    protected abstract void specialMove();
+    protected abstract void specialMove(int nextTile);
     public abstract void calculatePossibleMoves(PieceDirections dir);
     protected abstract void calculatePossiblePreys(PieceDirections dir);
 }

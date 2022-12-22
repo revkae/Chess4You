@@ -11,7 +11,7 @@ public class Bishop extends Piece {
     }
 
     @Override
-    public void specialMove() {
+    public void specialMove(int nextTile) {
 
     }
 
