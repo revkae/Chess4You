@@ -29,10 +29,6 @@ public class MenuScene extends Scene {
 
     @Override
     public void onUpdate(float dt) {
-        if (Keyboard.isPressed(GLFW_KEY_O)) {
-            SceneManager.get().switchScene();
-            System.out.println("switched to game scene");
-        }
 
     }
 

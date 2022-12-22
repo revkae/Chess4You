@@ -38,7 +38,7 @@ public class GameManager {
         sceneManager.createFirstScene();
         renderer.createTextureBatchRenderer();
         boardManager = new BoardManager();
-        pieceManager = new PieceManager();
+        pieceManager = new PieceManager("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
 
         while (!glfwWindowShouldClose(window.getWindow())) {
             glClear(GL_COLOR_BUFFER_BIT);

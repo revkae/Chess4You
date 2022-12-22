@@ -20,9 +20,9 @@ public class PieceManager {
     Texture blackPawn = new Texture("resources/black_pawn.png");
     Texture whitePawn = new Texture("resources/white_pawn.png");
 
-    public PieceManager() {
+    public PieceManager(String fen) {
         instance = this;
-        PiecePlacerFEN.placePieces("rnbqkbnr/pppppppp/7p/8/8/8/PPPPPPPP/RNBQKBNR", this);
+        PiecePlacerFEN.placePieces(fen, this);
     }
 
     public void onUpdate() {
@@ -55,7 +55,6 @@ public class PieceManager {
                 piece.calculatePossiblePreys(dir);
             }
             if (piece.preys.contains(king)) {
-                System.out.println("checked");
                 king.checkedBy.add(piece);
                 king.isChecked = true;
             }
