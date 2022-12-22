@@ -56,95 +56,9 @@ public class PieceManager {
                 System.out.println("checked");
                 king.checkedBy.add(piece);
                 king.isChecked = true;
-            } //else {
-//                System.out.println("unchecked");
-//                king.checkedBy.clear();
-//                king.isChecked = true;
-//            }
+            }
         }
-
-
-//        if (king.isChecked) {
-//            for (Piece piece : getPiecesByColor(color)) {
-//                System.out.println("yes checke my man");
-//                for (PieceDirections dir : PieceDirections.values()) {
-//                    piece.calculatePossibleMoves(dir);
-//                }
-//                for (Integer move : piece.moves) {
-//                    piece.tryMove(move);
-//                    System.out.println("move: " + move);
-//                    for (Piece checked : king.checkedBy) {
-//                        for (PieceDirections dir : PieceDirections.values()) {
-//                            checked.calculatePossiblePreys(dir);
-//                        }
-//                        System.out.println("allpreys: " + checked.preys);
-//                        if (checked.preys.contains(king)) {
-//                            System.out.println("removed");
-//                            piece.moves.remove(move);
-//                        }
-//                        checked.preys.clear();
-//                    }
-//                    System.out.println("moveLIst: " + piece.moves);
-//                    piece.movableTiles = piece.moves;
-//                    piece.invertMove();
-//                }
-//            }
-//        } else {
-//            for (Piece piece : getPiecesByColor(color)){
-//                System.out.println("no checke my man");
-//                for (PieceDirections dir : PieceDirections.values()) {
-//                    piece.calculatePossibleMoves(dir);
-//                }
-//                for (Integer move : piece.moves) {
-//                    piece.tryMove(move);
-//                    System.out.println("move: " + move);
-//                    for (Piece opposite : getPiecesByColor(PieceColors.getOpposite(color))) {
-//                        for (PieceDirections dir : PieceDirections.values()) {
-//                            opposite.calculatePossiblePreys(dir);
-//                        }
-//                        System.out.println("allpreys: " + opposite.preys);
-//                        if (opposite.preys.contains(king)) {
-//                            System.out.println("removed");
-//                            piece.moves.remove(move);
-//                        }
-//                        opposite.preys.clear();
-//                    }
-//                    System.out.println("moveLIst: " + piece.moves);
-//                    piece.movableTiles = piece.moves;
-//                    piece.invertMove();
-//                }
-//            }
     }
-
-
-    //else {
-//            for (Piece piece : getPiecesByColor(color)) {
-//                for (PieceDirections dir : PieceDirections.values()) {
-//                    piece.calculatePossibleMoves(dir);
-//                }
-//                for (Integer move : piece.moves) {
-//                    piece.tryMove(move);
-//                    for (Piece opposite : getPiecesByColor(PieceColors.getOpposite(color))) {
-//                        for (PieceDirections dir : PieceDirections.values()) {
-//                            opposite.calculatePossiblePreys(dir);
-//                        }
-//                        if (opposite.preys.contains(king)) {
-//                            piece.moves.remove(move);
-//                            piece.invertMove();
-//                        }
-//                    }
-//                }
-//            }
-//            for (Piece piece : getPiecesByColor(PieceColors.getOpposite(color))) {
-//                for (PieceDirections dir : PieceDirections.values()) {
-//                    piece.calculatePossiblePreys(dir);
-//                }
-//                if (piece.preys.contains(king)) {
-//                    king.checkedBy.add(piece);
-//                    king.isChecked = true;
-//                }
-//            }
-    //}
 
     public Queue<Piece> getPieces() {
         return pieces;

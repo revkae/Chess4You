@@ -10,8 +10,6 @@ import me.raven.Sandbox.Managers.GameManager;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -21,7 +19,6 @@ public abstract class Piece {
 
     public PieceData data;
     public Queue<Integer> moves;
-    public Queue<Integer> movableTiles;
     public Queue<Piece> preys;
 
     public int tempTile;
@@ -33,7 +30,6 @@ public abstract class Piece {
 
     public Piece(Vector2f scale, Texture texture, int value, PieceColors color, int tile) {
         this.moves = new ConcurrentLinkedQueue<>();
-        this.movableTiles = new ConcurrentLinkedQueue<>();
         this.preys = new ConcurrentLinkedQueue<>();
         this.data = new PieceData(
                 new Quad(GameManager.get().getBoardManager().getBoard().get(tile).getTransform().position, scale, texture),
@@ -119,13 +115,11 @@ public abstract class Piece {
         GameManager.get().getPieceManager().changeTurn();
         king.isChecked = false;
         king.checkedBy.clear();
-
         unselect();
     }
 
     public void addMove(int move) {
         this.moves.add(move);
-        this.movableTiles.add(move);
     }
 
     public void addPrey(Piece prey) {
@@ -202,6 +196,7 @@ public abstract class Piece {
             for (Piece piece : PieceManager.get().getPiecesByColor(data.color)) {
                 for (PieceDirections dir : PieceDirections.values()) {
                     piece.calculatePossibleMoves(dir);
+                    piece.calculatePossiblePreys(dir);
                 }
                 for (Integer move : piece.moves) {
                     piece.tryMove(move);
@@ -223,14 +218,9 @@ public abstract class Piece {
                         }
                         checked.preys.clear();
                     }
-                    piece.movableTiles = piece.moves;
                     piece.invertMove();
                 }
-            }
-            for (Piece piece : PieceManager.get().getPiecesByColor(data.color)) {
-                for (PieceDirections dir : PieceDirections.values()) {
-                    piece.calculatePossiblePreys(dir);
-                }
+
                 for (Piece prey : piece.preys) {
                     for (Piece checked : king.checkedBy) {
                         if (!checked.equals(prey)) {
@@ -238,11 +228,31 @@ public abstract class Piece {
                         }
                     }
                 }
+
+                for (Piece prey : piece.preys) {
+                    piece.tryMove(prey.tempTile);
+                    prey.tryMove(50);
+
+                    for (Piece opposite : PieceManager.get().getPiecesByColor(PieceColors.getOpposite(data.color))) {
+                        for (PieceDirections dir : PieceDirections.values()) {
+                            opposite.calculatePossiblePreys(dir);
+                        }
+                        if (opposite.preys.contains(king)) {
+                            piece.preys.remove(prey);
+                        }
+                        opposite.preys.clear();
+                    }
+
+                    prey.invertMove();
+                    piece.invertMove();
+                }
             }
+
         } else {
             for (Piece piece : PieceManager.get().getPiecesByColor(data.color)) {
                 for (PieceDirections dir : PieceDirections.values()) {
                     piece.calculatePossibleMoves(dir);
+                    piece.calculatePossiblePreys(dir);
                 }
                 for (Integer move : piece.moves) {
                     piece.tryMove(move);
@@ -255,7 +265,24 @@ public abstract class Piece {
                         }
                         opposite.preys.clear();
                     }
-                    piece.movableTiles = piece.moves;
+                    piece.invertMove();
+                }
+
+                for (Piece prey : piece.preys) {
+                    piece.tryMove(prey.tempTile);
+                    prey.tryMove(50);
+
+                    for (Piece opposite : PieceManager.get().getPiecesByColor(PieceColors.getOpposite(data.color))) {
+                        for (PieceDirections dir : PieceDirections.values()) {
+                            opposite.calculatePossiblePreys(dir);
+                        }
+                        if (opposite.preys.contains(king)) {
+                            piece.preys.remove(prey);
+                        }
+                        opposite.preys.clear();
+                    }
+
+                    prey.invertMove();
                     piece.invertMove();
                 }
             }
