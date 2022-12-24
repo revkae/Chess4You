@@ -2,6 +2,7 @@ package me.raven.Sandbox.Game.Piece;
 
 import me.raven.Engine.Renderer.Renderer;
 import me.raven.Engine.Utils.Texture;
+import me.raven.Engine.Utils.Window;
 import me.raven.Sandbox.Game.Board.PiecePlacerFEN;
 import me.raven.Sandbox.Game.Piece.Pieces.*;
 import org.joml.Vector2f;
@@ -10,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
 
 public class PieceManager {
 
@@ -58,6 +61,18 @@ public class PieceManager {
                 king.checkedBy.add(piece);
                 king.isChecked = true;
             }
+        }
+
+        king.legalMoveControl();
+
+        boolean hasWon = true;
+        for (Piece piece : PieceManager.get().getPiecesByColor(color)) {
+            if (piece.moves.isEmpty() && piece.preys.isEmpty()) continue;
+            hasWon = false;
+        }
+        if (hasWon) {
+            System.out.println(PieceColors.getOpposite(color) + " WON");
+            glfwSetWindowShouldClose(Window.get().getWindow(), true);
         }
     }
 

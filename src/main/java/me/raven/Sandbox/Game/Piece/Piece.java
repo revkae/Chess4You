@@ -192,7 +192,7 @@ public abstract class Piece {
         return quad.getCollision().isInside(x, y);
     }
 
-    private void legalMoveControl() {
+    public void legalMoveControl() {
         King king = PieceManager.get().getKingByColor(data.color);
 
         if (king.isChecked) {
@@ -250,7 +250,6 @@ public abstract class Piece {
                     piece.invertMove();
                 }
             }
-
         } else {
             for (Piece piece : PieceManager.get().getPiecesByColor(data.color)) {
                 for (PieceDirections dir : PieceDirections.values()) {
