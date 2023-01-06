@@ -1,11 +1,6 @@
 package me.raven.Sandbox.Game.Piece;
 
-import me.raven.Sandbox.Game.Piece.Pieces.Bishop;
-import me.raven.Sandbox.Game.Piece.Pieces.King;
-import me.raven.Sandbox.Game.Piece.Pieces.Knight;
-import me.raven.Sandbox.Game.Piece.Pieces.Pawn;
-import me.raven.Sandbox.Game.Piece.Pieces.Queen;
-import me.raven.Sandbox.Game.Piece.Pieces.Rock;
+import me.raven.Sandbox.Game.Piece.Pieces.*;
 
 public enum PieceClass {
 

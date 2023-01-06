@@ -10,7 +10,6 @@ import java.util.List;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
-import static org.lwjgl.opengl.GL45.glBindTextureUnit;
 
 public class TexturedBatchRenderer {
 
@@ -19,7 +18,7 @@ public class TexturedBatchRenderer {
     private final int MAX_INDEX_SIZE = MAX_QUAD_SIZE * 6;
     private final int MAX_QUAD_FLOAT_SIZE = MAX_QUAD_SIZE * 40;
     private final int MAX_QUAD_BYTE_SIZE = MAX_QUAD_FLOAT_SIZE * Float.BYTES;
-    private final int MAX_TEXTURE_SLOT = 31;
+    private final int MAX_TEXTURE_SLOT = 15;
     private List<Integer> textureIds = new ArrayList<>(MAX_TEXTURE_SLOT);
     private float[] bufferData = new float[MAX_QUAD_FLOAT_SIZE];
     private float[] tempBufferData = new float[MAX_QUAD_FLOAT_SIZE];
@@ -54,7 +53,7 @@ public class TexturedBatchRenderer {
         shader.setMat4f("ortho", Camera.get().getOrthoMatrix());
         shader.setMat4f("view", Camera.get().getViewMatrix());
         shader.setMat4f("model", new Matrix4f().identity());
-        int[] sampler = new int[32];
+        int[] sampler = new int[16];
         for (int i = 0; i < MAX_TEXTURE_SLOT; i++) {
             sampler[i] = i;
         }
@@ -63,7 +62,9 @@ public class TexturedBatchRenderer {
 
     public void draw() {
         for (int i = 0; i < currentTextureIndex; i++) {
-            glBindTextureUnit(i, textureIds.get(i));
+            glActiveTexture(GL_TEXTURE0 + i);
+            glBindTexture(GL_TEXTURE_2D, textureIds.get(i));
+            //glBindTextureUnit(i, textureIds.get(i));
         }
 
         vertexArrayBuffer.bind();
@@ -73,7 +74,8 @@ public class TexturedBatchRenderer {
         vertexArrayBuffer.unbind();
 
         for (int i = 0; i < currentTextureIndex; i++) {
-            glBindTextureUnit(0, 0);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, 0);
         }
     }
 
@@ -120,7 +122,7 @@ public class TexturedBatchRenderer {
     }
 
     public boolean hasEnoughSlot() {
-        return currentTextureIndex < 31;
+        return currentTextureIndex < 15;
     }
 
     public void updateData() {

@@ -2,7 +2,6 @@ package me.raven.Engine.Renderer;
 
 import me.raven.Engine.Shapes.Drawable;
 import me.raven.Engine.Shapes.Quad;
-import me.raven.Engine.Utils.Camera;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -31,7 +30,7 @@ public class Renderer {
         float[] data = quad.getData();
         TexturedBatchRenderer batchRenderer = null;
         for (TexturedBatchRenderer renderer : texturedBatchRenderers) {
-            if (renderer.hasEnoughSpace(data) || renderer.hasEnoughSlot()) {
+            if (renderer.hasEnoughSpace(data) && renderer.hasEnoughSlot()) {
                 batchRenderer = renderer;
             }
         }

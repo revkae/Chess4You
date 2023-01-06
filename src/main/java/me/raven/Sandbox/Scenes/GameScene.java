@@ -1,10 +1,5 @@
 package me.raven.Sandbox.Scenes;
 
-import me.raven.Engine.Listeners.Keyboard;
-import me.raven.Sandbox.Managers.SceneManager;
-
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_P;
-
 public class GameScene extends Scene {
 
     public GameScene(int id) {

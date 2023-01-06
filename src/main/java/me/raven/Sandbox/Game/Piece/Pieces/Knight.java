@@ -2,7 +2,10 @@ package me.raven.Sandbox.Game.Piece.Pieces;
 
 import me.raven.Engine.Utils.Texture;
 import me.raven.Sandbox.Game.Board.BoardManager;
-import me.raven.Sandbox.Game.Piece.*;
+import me.raven.Sandbox.Game.Piece.Piece;
+import me.raven.Sandbox.Game.Piece.PieceColors;
+import me.raven.Sandbox.Game.Piece.PieceDirections;
+import me.raven.Sandbox.Game.Piece.PieceManager;
 import org.joml.Vector2f;
 
 public class Knight extends Piece {

@@ -1,17 +1,6 @@
 package me.raven.Sandbox.Scenes;
 
-import me.raven.Engine.Listeners.Keyboard;
-import me.raven.Engine.Shapes.Quad;
-import me.raven.Sandbox.Managers.SceneManager;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_O;
-
 public class MenuScene extends Scene {
-
-    List<Quad> quads = new ArrayList<>();
 
     public MenuScene(int id) {
         super(id);

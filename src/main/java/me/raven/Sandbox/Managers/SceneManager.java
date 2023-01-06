@@ -1,6 +1,5 @@
 package me.raven.Sandbox.Managers;
 
-import me.raven.Sandbox.Scenes.GameScene;
 import me.raven.Sandbox.Scenes.MenuScene;
 import me.raven.Sandbox.Scenes.Scene;
 
