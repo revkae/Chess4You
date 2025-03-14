@@ -1,5 +1,5 @@
 # Chess4You
-It is a practice project done in 3 weeks and it was my first approach to learning graphical programming. Made with lwjgl library using opengl. In future I am gonna add sound, ai, menu, text rendering to this game but for know it can be only played by yourself. Need some improvements on engine because its only capability is drawing stuff. 
+It is a practice project completed in three weeks, and it was my first attempt at learning graphical programming. The project was developed using the LWJGL library with OpenGL. In the future, I plan to add sound, AI, a menu, and text rendering to this game, but for now, it can only be played solo. The engine needs some improvements as its current capability is limited to drawing objects. 
 
 
 
@@ -7,4 +7,4 @@ It is a practice project done in 3 weeks and it was my first approach to learnin
 
 *Forsyth–Edwards Notation(FEN): rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR*
 
-It supports fen to place pieces.
+It supports fen systm to place pieces.
