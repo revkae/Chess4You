@@ -24,7 +24,7 @@ public class GameManager {
 
     public GameManager() {
         instance = this;
-        this.window = new Window(800, 800, "chessforyou");
+        this.window = new Window(800, 800, "Chess For you");
         this.camera = new Camera();
         this.sceneManager = new SceneManager();
         this.renderer = new Renderer();
@@ -95,5 +95,9 @@ public class GameManager {
 
     public PieceManager getPieceManager() {
         return pieceManager;
+    }
+
+    public Window getWindow() {
+        return window;
     }
 }

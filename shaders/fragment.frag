@@ -1,5 +1,4 @@
-#version 450 core
-#extension GL_EXT_nonuniform_qualifier : require
+#version 460 core
 
 out vec4 FragColor;
 
@@ -13,7 +12,7 @@ void main()
 {
     int texID = int(vTexID);
 
-    vec4 texColor = texture(textures[nonuniformEXT(texID)], vTexCoord) * vColor;
+    vec4 texColor = texture(textures[texID], vTexCoord) * vColor;
     if (texColor.a < 0.1) {
         discard;
     }

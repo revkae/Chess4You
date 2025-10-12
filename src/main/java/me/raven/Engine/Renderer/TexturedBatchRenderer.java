@@ -147,4 +147,8 @@ public class TexturedBatchRenderer {
         }
         return output;
     }
+
+    public List<Integer> getTextureIds() {
+        return textureIds;
+    }
 }

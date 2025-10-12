@@ -32,6 +32,14 @@ public class BoardManager {
         calculateSlidingMoves();
     }
 
+    public static boolean isValidTileNum(int tileNum) {
+        if (tileNum < 0 || tileNum > 63) {
+            return false;
+            //throw new IllegalArgumentException("Tile number must be between 0 and 63");
+        }
+        return true;
+    }
+
     private void calculateSlidingMoves() {
         int count = 0;
         for (int file = 0; file < 8; file++) {
