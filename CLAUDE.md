@@ -139,7 +139,7 @@ Tests are organized into:
 - Unit tests: `GameTest.java`, `GameManagerTest.java`, `ChessTest.java`
 - Comprehensive tests: `ComprehensiveChessTest.java`
 - Integration tests: `IntegrationChessTest.java`
-- Test suites: `CoreFunctionalityTestSuite.java`, `IntegrationTestSuite.java`
+- Test suites: `GameTestSuite.java`, `IntegrationTestSuite.java`
 
 Test dependencies include JUnit 5, JUnit Platform Suite, and Mockito.
 

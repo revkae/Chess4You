@@ -1,15 +1,12 @@
-import me.raven.Engine.Utils.Camera;
 import me.raven.Engine.Utils.Window;
 import me.raven.Sandbox.Managers.GameManager;
 import me.raven.Sandbox.Managers.SceneManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class GameManagerTest {
 
     @Test
