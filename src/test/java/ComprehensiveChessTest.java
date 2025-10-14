@@ -198,6 +198,12 @@ public class ComprehensiveChessTest {
     @Test
     @DisplayName("Test Extreme Invalid Values")
     public void testExtremeInvalidValues() {
+        assertAll("Is Valid Tile",
+                () -> assertFalse(BoardManager.isValidTileNum(Integer.MAX_VALUE)),
+                () -> assertFalse(BoardManager.isValidTileNum(Integer.MIN_VALUE)),
+                () -> assertFalse(BoardManager.isValidTileNum(9999)),
+                () -> assertFalse(BoardManager.isValidTileNum(-9999)));
+        /*
         assertFalse(BoardManager.isValidTileNum(Integer.MAX_VALUE),
                 "Maximum integer should be invalid tile");
         assertFalse(BoardManager.isValidTileNum(Integer.MIN_VALUE),
@@ -206,6 +212,7 @@ public class ComprehensiveChessTest {
                 "9999 should be invalid tile");
         assertFalse(BoardManager.isValidTileNum(-9999),
                 "-9999 should be invalid tile");
+         */
     }
 }
 
