@@ -1,6 +1,9 @@
 plugins {
     id 'java'
+    id 'application'
 }
+
+mainClassName = 'me.raven.Main'
 
 group 'me.raven'
 version '1.0-SNAPSHOT'
@@ -11,7 +14,27 @@ repositories {
 
 project.ext.lwjglVersion = "3.3.1"
 project.ext.jomlVersion = "1.10.5"
-project.ext.lwjglNatives = "natives-windows"
+
+// Auto-detect platform for LWJGL natives
+import org.gradle.internal.os.OperatingSystem
+switch (OperatingSystem.current()) {
+    case OperatingSystem.LINUX:
+        def osArch = System.getProperty("os.arch")
+        project.ext.lwjglNatives = osArch.startsWith("arm") || osArch.startsWith("aarch64")
+                ? "natives-linux-${osArch.contains("64") || osArch.startsWith("armv8") ? "arm64" : "arm32"}"
+                : osArch.contains("64") ? "natives-linux" : "natives-linux-x86"
+        break
+    case OperatingSystem.MAC_OS:
+        def osArch = System.getProperty("os.arch")
+        project.ext.lwjglNatives = osArch.startsWith("aarch64") || osArch.startsWith("arm")
+                ? "natives-macos-arm64"
+                : "natives-macos"
+        break
+    case OperatingSystem.WINDOWS:
+        def osArch = System.getProperty("os.arch")
+        project.ext.lwjglNatives = osArch.contains("64") ? "natives-windows" : "natives-windows-x86"
+        break
+}
 
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
@@ -53,6 +76,11 @@ dependencies {
 test {
     useJUnitPlatform()
 
+    // macOS requires GLFW to run on the first thread
+    if (OperatingSystem.current().isMacOsX()) {
+        jvmArgs '-XstartOnFirstThread'
+    }
+
     testLogging {
         events "passed", "skipped", "failed"
         exceptionFormat "full"
@@ -71,5 +99,12 @@ test {
                         "${result.skippedTestCount} skipped)"
             }
         }
+    }
+}
+
+run {
+    // macOS requires GLFW to run on the first thread
+    if (OperatingSystem.current().isMacOsX()) {
+        jvmArgs '-XstartOnFirstThread'
     }
 }

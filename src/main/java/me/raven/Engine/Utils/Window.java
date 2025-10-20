@@ -39,9 +39,21 @@ public class Window {
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+        // macOS-specific hints for better compatibility
+        String osName = System.getProperty("os.name").toLowerCase();
+        if (osName.contains("mac")) {
+            // macOS requires forward-compatible OpenGL context
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);  // 4.1 is highest on macOS
+            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+            glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+            glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_FALSE);
+        } else {
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        }
 
         window = glfwCreateWindow(this.width, this.height, this.title, NULL, NULL);
         if ( window == NULL )
@@ -53,19 +65,23 @@ public class Window {
         glfwSetScrollCallback(window, Mouse::scroll_callback);
         glfwSetFramebufferSizeCallback(window, this::framebuffer_size_callback);
 
-        try (MemoryStack stack = stackPush()) {
-            IntBuffer pWidth = stack.mallocInt(1); // int*
-            IntBuffer pHeight = stack.mallocInt(1); // int*
+        // Center window on screen (skip in headless environments)
+        long monitor = glfwGetPrimaryMonitor();
+        if (monitor != NULL) {
+            try (MemoryStack stack = stackPush()) {
+                IntBuffer pWidth = stack.mallocInt(1); // int*
+                IntBuffer pHeight = stack.mallocInt(1); // int*
 
-            glfwGetWindowSize(window, pWidth, pHeight);
+                glfwGetWindowSize(window, pWidth, pHeight);
 
-            GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+                GLFWVidMode vidmode = glfwGetVideoMode(monitor);
 
-            glfwSetWindowPos(
-                    window,
-                    (vidmode.width() - pWidth.get(0)) / 2,
-                    (vidmode.height() - pHeight.get(0)) / 2
-            );
+                glfwSetWindowPos(
+                        window,
+                        (vidmode.width() - pWidth.get(0)) / 2,
+                        (vidmode.height() - pHeight.get(0)) / 2
+                );
+            }
         }
 
         glfwMakeContextCurrent(window);

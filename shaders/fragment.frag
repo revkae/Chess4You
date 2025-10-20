@@ -1,4 +1,4 @@
-#version 460 core
+#version 410 core
 
 out vec4 FragColor;
 
@@ -6,7 +6,7 @@ in vec2 vTexCoord;
 in vec4 vColor;
 in float vTexID;
 
-uniform sampler2D textures[32];
+uniform sampler2D textures[16];
 
 void main()
 {

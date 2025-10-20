@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
-import static org.lwjgl.opengl.GL45.glBindTextureUnit;
 
 public class TexturedBatchRenderer {
 
@@ -19,7 +19,7 @@ public class TexturedBatchRenderer {
     private final int MAX_INDEX_SIZE = MAX_QUAD_SIZE * 6;
     private final int MAX_QUAD_FLOAT_SIZE = MAX_QUAD_SIZE * 40;
     private final int MAX_QUAD_BYTE_SIZE = MAX_QUAD_FLOAT_SIZE * Float.BYTES;
-    private final int MAX_TEXTURE_SLOT = 31;
+    private final int MAX_TEXTURE_SLOT = 16;
     private List<Integer> textureIds = new ArrayList<>(MAX_TEXTURE_SLOT);
     private float[] bufferData = new float[MAX_QUAD_FLOAT_SIZE];
     private float[] tempBufferData = new float[MAX_QUAD_FLOAT_SIZE];
@@ -54,7 +54,7 @@ public class TexturedBatchRenderer {
         shader.setMat4f("ortho", Camera.get().getOrthoMatrix());
         shader.setMat4f("view", Camera.get().getViewMatrix());
         shader.setMat4f("model", new Matrix4f().identity());
-        int[] sampler = new int[32];
+        int[] sampler = new int[16];
         for (int i = 0; i < MAX_TEXTURE_SLOT; i++) {
             sampler[i] = i;
         }
@@ -62,8 +62,10 @@ public class TexturedBatchRenderer {
     }
 
     public void draw() {
+        // Bind textures using OpenGL 3.0+ compatible method (works on macOS)
         for (int i = 0; i < currentTextureIndex; i++) {
-            glBindTextureUnit(i, textureIds.get(i));
+            glActiveTexture(GL_TEXTURE0 + i);
+            glBindTexture(GL_TEXTURE_2D, textureIds.get(i));
         }
 
         vertexArrayBuffer.bind();
@@ -72,8 +74,10 @@ public class TexturedBatchRenderer {
         shader.unuse();
         vertexArrayBuffer.unbind();
 
+        // Unbind textures
         for (int i = 0; i < currentTextureIndex; i++) {
-            glBindTextureUnit(0, 0);
+            glActiveTexture(GL_TEXTURE0 + i);
+            glBindTexture(GL_TEXTURE_2D, 0);
         }
     }
 
@@ -99,6 +103,10 @@ public class TexturedBatchRenderer {
         }
 
         if (textureIndex == 0 && !isEqual) {
+            // Check if we have space for a new texture
+            if (currentTextureIndex >= MAX_TEXTURE_SLOT) {
+                throw new RuntimeException("Exceeded maximum texture slots (" + MAX_TEXTURE_SLOT + "). Consider creating a new batch.");
+            }
             textureIndex = currentTextureIndex;
             textureIds.set(textureIndex, quad.getTexture().id);
             quad.setTexID(textureIndex);
@@ -120,7 +128,7 @@ public class TexturedBatchRenderer {
     }
 
     public boolean hasEnoughSlot() {
-        return currentTextureIndex < 31;
+        return currentTextureIndex < MAX_TEXTURE_SLOT;
     }
 
     public void updateData() {
@@ -150,5 +158,14 @@ public class TexturedBatchRenderer {
 
     public List<Integer> getTextureIds() {
         return textureIds;
+    }
+
+    public boolean hasTexture(int textureId) {
+        for (int i = 0; i < currentTextureIndex; i++) {
+            if (textureIds.get(i) == textureId) {
+                return true;
+            }
+        }
+        return false;
     }
 }

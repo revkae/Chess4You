@@ -31,8 +31,20 @@ public class Renderer {
         float[] data = quad.getData();
         TexturedBatchRenderer batchRenderer = null;
         for (TexturedBatchRenderer renderer : texturedBatchRenderers) {
-            if (renderer.hasEnoughSpace(data) || renderer.hasEnoughSlot()) {
+            // Prefer renderers that already have this texture
+            if (renderer.hasTexture(quad.getTexture().id) && renderer.hasEnoughSpace(data)) {
                 batchRenderer = renderer;
+                break;
+            }
+        }
+
+        // If texture not found, look for renderer with available slot
+        if (batchRenderer == null) {
+            for (TexturedBatchRenderer renderer : texturedBatchRenderers) {
+                if (renderer.hasEnoughSpace(data) && renderer.hasEnoughSlot()) {
+                    batchRenderer = renderer;
+                    break;
+                }
             }
         }
 
