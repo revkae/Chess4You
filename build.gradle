@@ -37,11 +37,15 @@ switch (OperatingSystem.current()) {
 }
 
 dependencies {
+    // JavaParser for call graph analysis
+    implementation 'com.github.javaparser:javaparser-symbol-solver-core:3.25.5'
+
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testImplementation 'org.junit.platform:junit-platform-suite:1.8.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.10.0'
     testImplementation 'org.mockito:mockito-core:5.3.1'
     testImplementation 'org.mockito:mockito-junit-jupiter:5.3.1'
+    testImplementation 'org.mockito:mockito-inline:5.2.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 
     implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
@@ -107,4 +111,20 @@ run {
     if (OperatingSystem.current().isMacOsX()) {
         jvmArgs '-XstartOnFirstThread'
     }
+}
+
+// Task to generate call graph
+task generateCallGraph(type: JavaExec) {
+    group = 'documentation'
+    description = 'Generates call graph diagrams from source code'
+
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'me.raven.CallGraphAnalyzer'
+
+    // Arguments: sourceDir, outputDir, entryPoint
+    args = [
+        'src/main/java',
+        'diagrams',
+        'me.raven.Main.main'
+    ]
 }

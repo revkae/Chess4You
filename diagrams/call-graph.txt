@@ -1,0 +1,22 @@
+Call Graph Tree
+===============
+
+- Main.main
+  - GameManager.loop
+    - GL.createCapabilities (external)
+    - glClearColor (external)
+    - sceneManager.createFirstScene (external)
+    - renderer.createTextureBatchRenderer (external)
+    - glfwWindowShouldClose (external)
+    - window.getWindow (external)
+    - glClear (external)
+    - boardManager.onUpdate (external)
+    - boardManager.onRender (external)
+    - pieceManager.onUpdate (external)
+    - pieceManager.onRender (external)
+    - renderer.onRender (external)
+    - glfwSwapBuffers (external)
+    - glfwPollEvents (external)
+    - DeltaTime.calculate (external)
+    - renderer.shutdown (external)
+    - end (external)

@@ -1,0 +1,191 @@
+================================================================================
+                    HOMEWORK 3 - WHAT TO SUBMIT
+================================================================================
+
+YOUR HOMEWORK IS COMPLETE! Here's what you need to submit:
+
+📄 MAIN DELIVERABLE: PDF Report
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+The PDF report should contain:
+
+1. COVER PAGE
+   • Course name
+   • Assignment: "Homework 3 - Integration Testing"
+   • Your name(s)
+   • Student ID(s)
+   • Date
+   • Project: Chess4You
+
+2. CALL-GRAPH DIAGRAMS (Section 2)
+   • Full project class diagram (from diagrams/class-diagram.puml)
+   • Integration pairs diagram (from diagrams/integration-pairs.puml)
+   
+   HOW TO GENERATE:
+   a) IntelliJ IDEA (recommended):
+      - Right-click src/main/java → Diagrams → Show Diagram
+      - Export as PNG
+   
+   b) Online PlantUML:
+      - Go to: https://www.planttext.com/
+      - Copy/paste content from diagrams/*.puml files
+      - Download PNG
+
+3. INTEGRATION TESTING STRATEGY (Section 3)
+   • Explain pair-wise integration method
+   • Show 5 integration pairs tested:
+     - GameManager ↔ BoardManager ↔ PieceManager
+     - PieceManager ↔ Piece ↔ BoardManager
+     - Turn Management ↔ Check Detection
+     - Rendering Pipeline
+     - Coordinate System
+
+4. TEST CASES TABLE (Section 4)
+   • All 20 tests listed
+   • Show: Test #, Name, Classes Tested, Mock Behaviors, Status (PASSED)
+
+5. MOCKITO MOCK OBJECTS (Section 5)
+   • Show at least 3 examples with 5+ behaviors each
+   • Code excerpts from PairWiseIntegrationTest.java
+   • Example: Tests 1, 6, 9, 13 (shown in report)
+
+6. TEST EXECUTION RESULTS (Section 6)
+   • Screenshot of: ./gradlew test --tests PairWiseIntegrationTest
+   • Show output: "SUCCESS (20 tests, 20 passed, 0 failed, 0 skipped)"
+
+7. CODE IMPLEMENTATION (Section 7)
+   • Show test file structure
+   • Include 2-3 complete test method examples
+   • Show build.gradle dependencies
+
+8. CONCLUSION (Section 8)
+   • Summary of achievements
+   • Key learnings
+   • Testing insights
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 STEP-BY-STEP TO CREATE PDF:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STEP 1: Generate Diagrams
+  → Open diagrams/class-diagram.puml
+  → Visit: https://www.planttext.com/
+  → Paste content and download PNG
+  → Repeat for diagrams/integration-pairs.puml
+  → Save as: class-diagram.png and integration-pairs.png
+
+STEP 2: Take Screenshots
+  → Run: ./gradlew test --tests PairWiseIntegrationTest
+  → Screenshot the terminal output
+  → Screenshot test code in your IDE
+
+STEP 3: Edit Report
+  → Open: INTEGRATION_TEST_REPORT.md
+  → Add your name and student ID at the top
+  → Insert diagram images
+  → Insert screenshots
+
+STEP 4: Convert to PDF
+  
+  OPTION A - Pandoc (best quality):
+    brew install pandoc
+    pandoc INTEGRATION_TEST_REPORT.md -o Homework3_Integration_Testing.pdf \
+      --pdf-engine=xelatex -V geometry:margin=1in
+  
+  OPTION B - Online (easiest):
+    Visit: https://www.markdowntopdf.com/
+    Upload: INTEGRATION_TEST_REPORT.md
+    Download PDF
+  
+  OPTION C - IDE:
+    Open INTEGRATION_TEST_REPORT.md in VS Code or IntelliJ
+    Right-click → Export to PDF
+
+STEP 5: Review PDF
+  ✓ All 8 sections present
+  ✓ Diagrams visible
+  ✓ Screenshots included
+  ✓ Your name on cover
+  ✓ All 20 tests documented
+  ✓ Code formatting correct
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎤 PRESENTATION PREPARATION:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+BE READY TO:
+
+1. RUN TESTS LIVE
+   Command: ./gradlew test --tests PairWiseIntegrationTest
+   Expected: All 20 tests pass
+
+2. SHOW CALL-GRAPH
+   Display the class diagram and explain main components
+
+3. EXPLAIN 2-3 TEST CASES
+   Recommended: Tests 1, 6, and 20
+   - What they test
+   - Why they're important
+   - How mocks are used
+
+4. DEMONSTRATE MOCKITO
+   Show examples of when-then-return statements
+   Explain why each mock behavior is needed
+
+5. ANSWER QUESTIONS
+   Common questions:
+   • "Why pair-wise integration?"
+     → Tests specific class interactions in isolation
+   
+   • "Why 5+ behaviors per mock?"
+     → Thoroughly validates different scenarios
+   
+   • "What if a test fails?"
+     → Identifies which integration point has issues
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 QUICK STATS TO MEMORIZE:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+• 20 integration tests (100% passing)
+• 5 integration pairs tested
+• 8+ classes involved
+• 7 types of mock objects
+• 5+ mock behaviors per test
+• 621 lines of test code
+• Pair-wise integration method
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ SUBMISSION CHECKLIST:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+□ PDF report created
+□ Call-graph diagrams included in report
+□ Test execution screenshot included
+□ Your name and ID added to report
+□ All 20 tests documented
+□ At least 3 Mockito examples shown
+□ Code excerpts included
+□ Report reviewed for completeness
+□ Tests verified to pass one final time
+□ Presentation practiced
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 YOU HAVE EVERYTHING YOU NEED!
+
+All the hard work is done:
+✓ Tests written and passing
+✓ Mockito mocks properly configured
+✓ Call-graph diagrams created
+✓ Complete report template ready
+
+Just follow the steps above to create your final PDF and you're done!
+
+Good luck! 🚀
+
+================================================================================
