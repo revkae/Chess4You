@@ -1,7 +1,0 @@
-@startuml
-!theme plain
-left to right direction
-
-[Main.main] --> [GameManager.loop]
-
-@enduml
